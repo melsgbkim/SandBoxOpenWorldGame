@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AttackHp : Attack
 {
-    public void init(float damage,GameObject p,float end)
+    public void init(float damage,GameObject p,float end,ACTION a)
     {
         getStat = delegate (Collider other)
         {
@@ -13,6 +13,7 @@ public class AttackHp : Attack
 
         this.damage = damage;
         starter = p;
+		action = a;
         SetEndTime(end);
     }
 }

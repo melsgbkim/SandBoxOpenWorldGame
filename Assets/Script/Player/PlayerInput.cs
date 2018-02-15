@@ -28,14 +28,16 @@ public class PlayerInput : MonoBehaviour {
             Input.GetKey(KeyUp), Input.GetKey(KeyDown), 
             Input.GetKey(KeyLeft), Input.GetKey(KeyRight), 
             Input.GetKey(KeyRun));
-        GetComponent<PlayerMove>().jumpUpdate((!CancleMoveBySkill) && Input.GetKeyDown(KeyJump));
-
-        //GetComponent<PlayerMining>().actionUpdate(Input.GetKey(KeyMining));
+		else
+			print("aaa");
+		GetComponent<PlayerMove>().jumpUpdate((!CancleMoveBySkill) && Input.GetKeyDown(KeyJump));
+		
+		//GetComponent<PlayerMining>().actionUpdate(Input.GetKey(KeyMining));
 
         if(Input.GetKeyDown(KeyCode.F5))
         {
             GameObject obj = Instantiate((GameObject)Resources.Load("AttackRange/att"));
-            obj.GetComponent<AttackHp>().init(10, null, 0.3f);
+            obj.GetComponent<AttackHp>().init(10, null, 0.3f,delegate(Collider col) { });
             obj.transform.position = transform.position;
         }
 

@@ -17,7 +17,9 @@ public class Attack : MonoBehaviour
         {
             hash.Add(stat, stat);
             damageToStat(stat);
-        }
+			action(other);
+
+		}
     }
 
     public delegate Stat TARGETSTAT(Collider other);
@@ -29,12 +31,13 @@ public class Attack : MonoBehaviour
     public virtual void damageToStat(Stat target)
     {
         target.Decrease(damage);
-    }
+
+	}
 
     void Update()
     {
         dtime += Time.deltaTime;
-        if (dtime <= endtime)
+        if (dtime >= endtime)
             Destroy(gameObject);
     }
 
@@ -43,4 +46,7 @@ public class Attack : MonoBehaviour
         endtime = t;
         dtime = 0f;
     }
+
+	public delegate void ACTION(Collider col);
+	public ACTION action;
 }
