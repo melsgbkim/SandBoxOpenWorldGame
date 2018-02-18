@@ -75,7 +75,9 @@ public class BlockManager : MonoBehaviour {
         {
             for (int i = 0; i < 10; i++)
             {
-                AddBlockRange(BlockPrefab, new Vector3(0, y, 0 + y), new Vector3(20, y, 2 + y), Cube.TYPE.Grass);
+                for (int j = 0; j < 10; j++)
+                    AddBlockRange(BlockPrefab, new Vector3(0, y, 0 + y+ j * 2), new Vector3(20, y, 2 + y+j * 2), Cube.TYPE.Grass);
+
                 y++;
             }
         }
