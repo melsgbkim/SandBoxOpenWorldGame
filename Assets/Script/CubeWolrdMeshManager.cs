@@ -6,46 +6,18 @@ public class CubeWolrdMeshManager : MonoBehaviour {
     public float BlockCountInWidth = 64;
     public float tileX = 0;
     public float tileY = 0;
+    float tilePerc = 1 / 64f;
 
     public GameObject obj;
 
     Vector3 pos;
+    OctreeMeshNode octreeMeshNode;
     // Use this for initialization
     void Start () {
-        pos = transform.position;
-        float tilePerc = 1 / BlockCountInWidth;
-
-        Vector2 u = new Vector2(tileX, tileX + 1) * tilePerc;
-        Vector2 v = new Vector2(tileY, tileY + 1) * tilePerc;
-
-        Vector2[] blockUVs = new Vector2[24];
-        blockUVs[0] =  new Vector2(u.x, v.x);
-        blockUVs[1] =  new Vector2(u.y, v.x);
-        blockUVs[2] =  new Vector2(u.x, v.y);
-        blockUVs[3] =  new Vector2(u.y, v.y);
-        blockUVs[4] =  new Vector2(u.x, v.y);
-        blockUVs[5] =  new Vector2(u.y, v.y);
-        blockUVs[6] =  new Vector2(u.x, v.y);
-        blockUVs[7] =  new Vector2(u.y, v.y);
-        blockUVs[8] =  new Vector2(u.x, v.x);
-        blockUVs[9] =  new Vector2(u.y, v.x);
-        blockUVs[10] = new Vector2(u.x, v.x);
-        blockUVs[11] = new Vector2(u.y, v.x);
-        blockUVs[12] = new Vector2(u.x, v.x);
-        blockUVs[13] = new Vector2(u.x, v.y);
-        blockUVs[14] = new Vector2(u.y, v.y);
-        blockUVs[15] = new Vector2(u.y, v.x);
-        blockUVs[16] = new Vector2(u.x, v.x);
-        blockUVs[17] = new Vector2(u.x, v.y);
-        blockUVs[18] = new Vector2(u.y, v.y);
-        blockUVs[19] = new Vector2(u.y, v.x);
-        blockUVs[20] = new Vector2(u.x, v.x);
-        blockUVs[21] = new Vector2(u.x, v.y);
-        blockUVs[22] = new Vector2(u.y, v.y);
-        blockUVs[23] = new Vector2(u.y, v.x);
-
-        this.GetComponent<MeshFilter>().mesh.uv = blockUVs;
-
+        pos = Vector3.zero;
+        this.GetComponent<MeshFilter>().mesh.uv = getDefaultUV(new Vector2(tileX, tileY));
+        octreeMeshNode = new OctreeMeshNode();
+        octreeMeshNode.SetRoot();
     }
 
     void expend(GameObject block)
@@ -54,9 +26,7 @@ public class CubeWolrdMeshManager : MonoBehaviour {
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
         //Destroy(this.gameObject.GetComponent<MeshCollider>());
 
-        Vector2[] oldMeshUVs = transform.GetComponent<MeshFilter>().mesh.uv;
-
-        for(int i=0;i<meshFilters.Length;i++)
+        for (int i = 0; i < meshFilters.Length; i++)
         {
             combine[i].mesh = meshFilters[i].sharedMesh;
             combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
@@ -64,40 +34,6 @@ public class CubeWolrdMeshManager : MonoBehaviour {
         }
         transform.GetComponent<MeshFilter>().mesh = new Mesh();
         transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine, true);
-
-        Vector2[] newMeshUVs = new Vector2[oldMeshUVs.Length + 24];
-        for (int i = 0; i < oldMeshUVs.Length; i++)
-            newMeshUVs[i] = oldMeshUVs[i];
-
-        float tilePerc = 1 / BlockCountInWidth;
-        Vector2 u = new Vector2(tileX, tileX + 1) * tilePerc;
-        Vector2 v = new Vector2(tileY, tileY + 1) * tilePerc;
-        newMeshUVs[oldMeshUVs.Length + 0 ] = new Vector2(u.x, v.x);
-        newMeshUVs[oldMeshUVs.Length + 1 ] = new Vector2(u.y, v.x);
-        newMeshUVs[oldMeshUVs.Length + 2 ] = new Vector2(u.x, v.y);
-        newMeshUVs[oldMeshUVs.Length + 3 ] = new Vector2(u.y, v.y);
-        newMeshUVs[oldMeshUVs.Length + 4 ] = new Vector2(u.x, v.y);
-        newMeshUVs[oldMeshUVs.Length + 5 ] = new Vector2(u.y, v.y);
-        newMeshUVs[oldMeshUVs.Length + 6 ] = new Vector2(u.x, v.y);
-        newMeshUVs[oldMeshUVs.Length + 7 ] = new Vector2(u.y, v.y);
-        newMeshUVs[oldMeshUVs.Length + 8 ] = new Vector2(u.x, v.x);
-        newMeshUVs[oldMeshUVs.Length + 9 ] = new Vector2(u.y, v.x);
-        newMeshUVs[oldMeshUVs.Length + 10] = new Vector2(u.x, v.x);
-        newMeshUVs[oldMeshUVs.Length + 11] = new Vector2(u.y, v.x);
-        newMeshUVs[oldMeshUVs.Length + 12] = new Vector2(u.x, v.x);
-        newMeshUVs[oldMeshUVs.Length + 13] = new Vector2(u.x, v.y);
-        newMeshUVs[oldMeshUVs.Length + 14] = new Vector2(u.y, v.y);
-        newMeshUVs[oldMeshUVs.Length + 15] = new Vector2(u.y, v.x);
-        newMeshUVs[oldMeshUVs.Length + 16] = new Vector2(u.x, v.x);
-        newMeshUVs[oldMeshUVs.Length + 17] = new Vector2(u.x, v.y);
-        newMeshUVs[oldMeshUVs.Length + 18] = new Vector2(u.y, v.y);
-        newMeshUVs[oldMeshUVs.Length + 19] = new Vector2(u.y, v.x);
-        newMeshUVs[oldMeshUVs.Length + 20] = new Vector2(u.x, v.x);
-        newMeshUVs[oldMeshUVs.Length + 21] = new Vector2(u.x, v.y);
-        newMeshUVs[oldMeshUVs.Length + 22] = new Vector2(u.y, v.y);
-        newMeshUVs[oldMeshUVs.Length + 23] = new Vector2(u.y, v.x);
-
-        transform.GetComponent<MeshFilter>().mesh.uv = newMeshUVs;
         transform.GetComponent<MeshFilter>().mesh.RecalculateBounds();
         transform.GetComponent<MeshFilter>().mesh.RecalculateNormals();
 
@@ -105,19 +41,123 @@ public class CubeWolrdMeshManager : MonoBehaviour {
         Destroy(block);
     }
 
+    void expend(MeshCube c)
+    {
+        List<QuadManager.DIRECTION> list = c.getActiveDirList();
+        MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length+ list.Count];
+        //Destroy(this.gameObject.GetComponent<MeshCollider>());
+
+        for (int i = 0; i < meshFilters.Length; i++)
+        {
+            combine[i].mesh = meshFilters[i].sharedMesh;
+            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+            meshFilters[i].gameObject.SetActive(false);
+        }
+        List<Mesh> meshList = c.getMeshList(list, new Vector2(tileX, tileY) * tilePerc, Vector2.one * tilePerc);
+        for (int i=0;i< meshList.Count; i++)
+        {
+            GameObject tmp = new GameObject();
+            tmp.transform.localPosition = c.center;
+            combine[i + meshFilters.Length].mesh = meshList[i];
+            combine[i + meshFilters.Length].transform = tmp.transform.localToWorldMatrix;
+            Destroy(tmp);
+        }
+        transform.GetComponent<MeshFilter>().mesh = new Mesh();
+        transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine, true);
+        transform.GetComponent<MeshFilter>().mesh.RecalculateBounds();
+        transform.GetComponent<MeshFilter>().mesh.RecalculateNormals();
+
+        transform.gameObject.SetActive(true);
+    }
+
     // Update is called once per frame
     void Update () {
-        if (Input.GetKeyDown(KeyCode.F6))
+        if (Input.GetKey(KeyCode.F6))
         {
-            for (int i = 0; i < 250; i++)
+            for (int i = 0; i < 5; i++)
             {
                 if (pos.x < -50)
                     pos = new Vector3(0, 0, pos.z + 1);
                 pos += Vector3.left;
-                GameObject block = Instantiate(obj, pos, Quaternion.identity) as GameObject;
-                block.transform.SetParent(this.transform);
-                expend(block);
+                addBlock(pos);
+                //GameObject block = Instantiate(obj, pos, Quaternion.identity) as GameObject;
+                //block.transform.SetParent(this.transform);
+                //block.GetComponent<MeshFilter>().mesh.uv = getDefaultUV(new Vector2(tileX, tileY));
+                //expend(block);
             }
         }
 	}
+
+    void addBlock(Vector3 center)
+    {
+        addBlock(center, Vector3.one);
+    }
+
+    void addBlock(Vector3 center, Vector3 size)
+    {
+        Vector3 s = center - size * 0.5f;
+        Vector3 e = center + size * 0.5f;
+
+        List<MeshCube> list = octreeMeshNode.FindRangeList(s, e);
+        if(list.Count <= 0)
+        {
+            List<MeshCube> listAround = octreeMeshNode.FindRangeList(s - Vector3.one, e + Vector3.one);
+            MeshCube c = new MeshCube(center, new Vector2(tileX, tileY) * tilePerc, Vector2.one * tilePerc);
+            List<int> triangleList = new List<int>();
+            if (listAround.Count > 0)
+            {
+                for (int i = 0; i < listAround.Count; i++)
+                {
+                    QuadManager.DIRECTION dir = c.tryDeleteMeshNearMeshCube(listAround[i]);
+                    //triangleList.Add(listAround[i].quadArr[(int)dir].triIndex);
+                }
+            }
+            octreeMeshNode.AddValue(new OctreeAble(c), s, e);
+            expend(c);
+        }
+    }
+
+    void newMeshExpend()
+    {
+
+    }
+
+
+
+
+
+    Vector2[] getDefaultUV(Vector2 tile)
+    {
+        Vector2[] newMeshUVs = new Vector2[24];
+        
+        Vector2 u = new Vector2(tile.x, tile.x + 1) * tilePerc;
+        Vector2 v = new Vector2(tile.y, tile.y + 1) * tilePerc;
+        newMeshUVs[0] = new Vector2(u.x, v.x);
+        newMeshUVs[1] = new Vector2(u.y, v.x);
+        newMeshUVs[2] = new Vector2(u.x, v.y);
+        newMeshUVs[3] = new Vector2(u.y, v.y);
+        newMeshUVs[4] = new Vector2(u.x, v.y);
+        newMeshUVs[5] = new Vector2(u.y, v.y);
+        newMeshUVs[6] = new Vector2(u.x, v.y);
+        newMeshUVs[7] = new Vector2(u.y, v.y);
+        newMeshUVs[8] = new Vector2(u.x, v.x);
+        newMeshUVs[9] = new Vector2(u.y, v.x);
+        newMeshUVs[10] = new Vector2(u.x, v.x);
+        newMeshUVs[11] = new Vector2(u.y, v.x);
+        newMeshUVs[12] = new Vector2(u.x, v.x);
+        newMeshUVs[13] = new Vector2(u.x, v.y);
+        newMeshUVs[14] = new Vector2(u.y, v.y);
+        newMeshUVs[15] = new Vector2(u.y, v.x);
+        newMeshUVs[16] = new Vector2(u.x, v.x);
+        newMeshUVs[17] = new Vector2(u.x, v.y);
+        newMeshUVs[18] = new Vector2(u.y, v.y);
+        newMeshUVs[19] = new Vector2(u.y, v.x);
+        newMeshUVs[20] = new Vector2(u.x, v.x);
+        newMeshUVs[21] = new Vector2(u.x, v.y);
+        newMeshUVs[22] = new Vector2(u.y, v.y);
+        newMeshUVs[23] = new Vector2(u.y, v.x);
+
+        return newMeshUVs;
+    }
 }

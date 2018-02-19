@@ -28,8 +28,6 @@ public class PlayerInput : MonoBehaviour {
             Input.GetKey(KeyUp), Input.GetKey(KeyDown), 
             Input.GetKey(KeyLeft), Input.GetKey(KeyRight), 
             Input.GetKey(KeyRun));
-		else
-			print("aaa");
 		GetComponent<PlayerMove>().jumpUpdate((!CancleMoveBySkill) && Input.GetKeyDown(KeyJump));
 		
 		//GetComponent<PlayerMining>().actionUpdate(Input.GetKey(KeyMining));

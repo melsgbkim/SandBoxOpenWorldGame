@@ -174,7 +174,7 @@ public class BlockManager : MonoBehaviour {
         }
         if (MargeTarget == null)
         {
-            OctreeCube.AddValue(cube, cube.GetStartVector3(), cube.GetEndVector3());
+            OctreeCube.AddValue(new OctreeAble(cube), cube.GetStartVector3(), cube.GetEndVector3());
             GetComponent<QuadManager>().AddQuadAllDir(cube);
         }
         else
@@ -182,7 +182,7 @@ public class BlockManager : MonoBehaviour {
             MargeTarget.ExpandCubeForMarge(cube);
             DestroyImmediate(tmp.gameObject);
             //print("b : " + MargeTarget.myTree.name);
-            MargeTarget.myTree.updateValue(MargeTarget);
+            MargeTarget.myTree.updateValue(new OctreeAble(MargeTarget));
             loopMarge(MargeTarget);
             //print("a : " + MargeTarget.myTree.name);
             //update MargeTarget
@@ -239,7 +239,7 @@ public class BlockManager : MonoBehaviour {
     public bool deleteBlock(Vector3 s, Vector3 e, Cube target)
     {
         List<CubeRangeData> splitList = target.getSplitCubeListbyRange(s, e);
-        target.myTree.PopValueAllParent(target);
+        target.myTree.PopValueAllParent(new OctreeAble(target));
         DestroyImmediate(target.gameObject);
         //print("splitList.Count : " + splitList.Count);
         int count = 0;
@@ -269,7 +269,7 @@ public class BlockManager : MonoBehaviour {
         {
             //print("Main (" + list[0].GetStartVector3() + ">>" + list[0].GetEndVector3() + ")");
             List<CubeRangeData> splitList = list[0].getSplitCubeListbyRange(s, e);
-            OctreeCube.PopValueAllParent(list[0]);
+            OctreeCube.PopValueAllParent(new OctreeAble(list[0]));
             DestroyImmediate(list[0].gameObject);
 
             foreach (CubeRangeData data in splitList)
@@ -321,9 +321,9 @@ public class BlockManager : MonoBehaviour {
             if (MargeTarget != null)
             {
                 MargeTarget.ExpandCubeForMarge(cube);
-                cube.myTree.PopValueAllParent(cube);
+                cube.myTree.PopValueAllParent(new OctreeAble(cube));
                 DestroyImmediate(cube.gameObject);
-                MargeTarget.myTree.updateValue(MargeTarget);
+                MargeTarget.myTree.updateValue(new OctreeAble(MargeTarget));
                 cube = MargeTarget;
                 MargeTarget = null;
             }

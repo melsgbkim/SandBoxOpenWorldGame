@@ -19,6 +19,19 @@ public class QuadManager : MonoBehaviour {
     private Vector3[] Vec3Arr = new Vector3[(int)(DIRECTION.max)];
     private Quaternion[] QuatArr = new Quaternion[(int)(DIRECTION.max)];
 
+    public static List<QuadManager.DIRECTION> DirList = new List<QuadManager.DIRECTION>();
+    public QuadManager()
+    {
+        if(DirList.Count == 0)
+        {
+            DirList.Add(DIRECTION.front);
+            DirList.Add(DIRECTION.back);
+            DirList.Add(DIRECTION.right);
+            DirList.Add(DIRECTION.left);
+            DirList.Add(DIRECTION.top);
+            DirList.Add(DIRECTION.bottom);
+        }
+    }
     // Use this for initialization
     void Start () {
         Vec3Arr[(int)(DIRECTION.front)] = new Vector3(0, 0, -0.5f);
