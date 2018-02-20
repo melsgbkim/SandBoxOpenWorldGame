@@ -31,12 +31,17 @@ public class MeshCube
     public OctreeMeshNode tree;
     public Vector3 center;
     public bool[] quadArr = new bool[(int)(QuadManager.DIRECTION.max)];
+    public int[] triIndexArr = new int[(int)(QuadManager.DIRECTION.max)];
+    public static List<int> triIndexList = new List<int>();
     Vector2 uvStart;
     Vector2 uvSize;
     public MeshCube(Vector3 center, Vector2 uvStart, Vector2 uvSize)
     {
         for (int i = 0; i < (int)QuadManager.DirList.Count; i++)
+        {
+            triIndexArr[i] = 0;
             quadArr[i] = true;
+        }
         this.center = center;
         this.uvStart = uvStart;
         this.uvSize = uvSize;
@@ -108,11 +113,11 @@ public class MeshCube
     public List<Mesh> getMeshList(List<QuadManager.DIRECTION> dirList, Vector2 uvStart, Vector2 uvSize)
     {
         List<Mesh> result = new List<Mesh>();
-        
-        
-        if (dirList[0] == QuadManager.DIRECTION.front)
+
+        int index = 0;
+        if (dirList[index] == QuadManager.DIRECTION.front)
         {
-            dirList.RemoveAt(0);
+            index++;
             Vector3[] vertices = new Vector3[4];
             Vector3[] normal = new Vector3[4];
             Vector2[] uv = new Vector2[4];
@@ -137,9 +142,9 @@ public class MeshCube
             mesh.triangles = tri;
             result.Add(mesh);
         }
-        if (dirList[0] == QuadManager.DIRECTION.back)
+        if (dirList[index] == QuadManager.DIRECTION.back)
         {
-            dirList.RemoveAt(0);
+            index++;
             Vector3[] vertices = new Vector3[4];
             Vector3[] normal = new Vector3[4];
             Vector2[] uv = new Vector2[4];
@@ -164,9 +169,9 @@ public class MeshCube
             mesh.triangles = tri;
             result.Add(mesh);
         }
-        if (dirList[0] == QuadManager.DIRECTION.right)
+        if (dirList[index] == QuadManager.DIRECTION.right)
         {
-            dirList.RemoveAt(0);
+            index++;
             Vector3[] vertices = new Vector3[4];
             Vector3[] normal = new Vector3[4];
             Vector2[] uv = new Vector2[4];
@@ -191,9 +196,9 @@ public class MeshCube
             mesh.triangles = tri;
             result.Add(mesh);
         }
-        if (dirList[0] == QuadManager.DIRECTION.left)
+        if (dirList[index] == QuadManager.DIRECTION.left)
         {
-            dirList.RemoveAt(0);
+            index++;
             Vector3[] vertices = new Vector3[4];
             Vector3[] normal = new Vector3[4];
             Vector2[] uv = new Vector2[4];
@@ -218,9 +223,9 @@ public class MeshCube
             mesh.triangles = tri;
             result.Add(mesh);
         }
-        if (dirList[0] == QuadManager.DIRECTION.top)
+        if (dirList[index] == QuadManager.DIRECTION.top)
         {
-            dirList.RemoveAt(0);
+            index++;
             Vector3[] vertices = new Vector3[4];
             Vector3[] normal = new Vector3[4];
             Vector2[] uv = new Vector2[4];
@@ -245,9 +250,9 @@ public class MeshCube
             mesh.triangles = tri;
             result.Add(mesh);
         }
-        if (dirList[0] == QuadManager.DIRECTION.bottom)
+        if (dirList[index] == QuadManager.DIRECTION.bottom)
         {
-            dirList.RemoveAt(0);
+            index++;
             Vector3[] vertices = new Vector3[4];
             Vector3[] normal = new Vector3[4];
             Vector2[] uv = new Vector2[4];
