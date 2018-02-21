@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class QuadManager : MonoBehaviour {
     public List<Transform> QuadPrefabList;
-    private List<Transform> QuadInTheWolrd;
+    private List<Transform> QuadInTheworld;
     //public List<Material> QuadMaterialList;
     public enum DIRECTION
     {
@@ -52,7 +52,7 @@ public class QuadManager : MonoBehaviour {
         Vec3Arr[(int)(DIRECTION.bottom)] = new Vector3(0, -0.5f, 0);
         QuatArr[(int)(DIRECTION.bottom)] = Quaternion.Euler(-90, 0, 0);
 
-        QuadInTheWolrd = new List<Transform>();
+        QuadInTheworld = new List<Transform>();
     }
 	
 	// Update is called once per frame
@@ -85,7 +85,7 @@ public class QuadManager : MonoBehaviour {
             quad.localRotation = QuatArr[(int)(dir)];
             quad.localScale = Vector3.one;
             cube.QuadList[(int)(dir)] = quad;
-            QuadInTheWolrd.Add(quad);
+            QuadInTheworld.Add(quad);
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BlockManager : MonoBehaviour {
     public Transform BlockPrefab;
-    public List<Transform> BlockInTheWolrd;
+    public List<Transform> BlockInTheworld;
     public OctreeNode OctreeCube;
     public static BlockManager manager = null;
 
@@ -135,7 +135,7 @@ public class BlockManager : MonoBehaviour {
     bool AddBlock(Transform obj,Vector3 vec,Vector3 size,Cube.TYPE type)
     {
         Transform tmp = Instantiate(obj, vec/3f, Quaternion.identity);
-        //BlockInTheWolrd.Add(tmp);
+        //BlockInTheworld.Add(tmp);
         tmp.name = "Block_" + num;
         num++;
         Cube cube = tmp.GetComponent<Cube>();
