@@ -5,9 +5,9 @@ using UnityEngine;
 public struct OctreeAble
 {
     public Object obj;
-    public MeshCube mesh;
+    public MeshQuad mesh;
     public OctreeAble(Object obj) { this.obj = obj; mesh = null; }
-    public OctreeAble(MeshCube mesh) { this.mesh = mesh; obj = null; }
+    public OctreeAble(MeshQuad mesh) { this.mesh = mesh; obj = null; }
 }
 
 public class OctreeBasic

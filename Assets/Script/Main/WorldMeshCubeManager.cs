@@ -48,6 +48,7 @@ public class WorldMeshCubeManager : MonoBehaviour {
         WorldMeshCube c = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         MeshCubeManagerTable.Add(type, c);
         c.Init();
+        c.type = type;
         switch (targetType)
         {
             case Cube.TYPE.Grass: c.TexturePath = "Texture/CubeGrass"; break;

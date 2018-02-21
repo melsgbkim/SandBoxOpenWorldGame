@@ -9,22 +9,22 @@ public class WorldMeshCube : MonoBehaviour {
     public float tileY = 0;
     float tilePerc = 1 / 64f;
 
-    OctreeMeshNode octreeMeshNode;
+    static OctreeMeshNode octreeMeshNode = null;
     int startTriangleIndex = 0;
     // Use this for initialization
 
 
     List<int> triIndexList = new List<int>();
+    public Cube.TYPE type;
 
     public void Init() {
         tilePerc = 1;
-
         this.GetComponent<MeshFilter>().mesh = new Mesh();
-        //this.GetComponent<MeshFilter>().mesh.uv = getDefaultUV(new Vector2(tileX, tileY));
-        //this.GetComponent<MeshRenderer>().material.mainTexture = (Texture)Resources.Load("Texture/CubeGrass");
-        
-        octreeMeshNode = new OctreeMeshNode();
-        octreeMeshNode.SetRoot();
+        if(octreeMeshNode == null)
+        {
+            octreeMeshNode = new OctreeMeshNode();
+            octreeMeshNode.SetRoot();
+        }
     }
 
     public string TexturePath
@@ -32,32 +32,10 @@ public class WorldMeshCube : MonoBehaviour {
         set { this.GetComponent<MeshRenderer>().material.mainTexture = (Texture)Resources.Load(value); }
     }
 
-    void expend(GameObject block)
+    void expend(MeshQuad c)
     {
         MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-        //Destroy(this.gameObject.GetComponent<MeshCollider>());
-
-        for (int i = 0; i < meshFilters.Length; i++)
-        {
-            combine[i].mesh = meshFilters[i].sharedMesh;
-            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
-            meshFilters[i].gameObject.SetActive(false);
-        }
-        transform.GetComponent<MeshFilter>().mesh = new Mesh();
-        transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine, true);
-        transform.GetComponent<MeshFilter>().mesh.RecalculateBounds();
-        transform.GetComponent<MeshFilter>().mesh.RecalculateNormals();
-
-        transform.gameObject.SetActive(true);
-        Destroy(block);
-    }
-
-    void expend(MeshCube c)
-    {
-        List<QuadManager.DIRECTION> list = c.getActiveDirList();
-        MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length+ list.Count];
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length+1];
         //Destroy(this.gameObject.GetComponent<MeshCollider>());
 
         
@@ -68,18 +46,16 @@ public class WorldMeshCube : MonoBehaviour {
             meshFilters[i].gameObject.SetActive(false);
             startTriangleIndex += combine[i].mesh.triangles.Length;
         }
-        List<Mesh> meshList = c.getMeshList(list, new Vector2(tileX, tileY) * tilePerc, Vector2.one * tilePerc);
-        for (int i=0;i< meshList.Count; i++)
-        {
-            GameObject tmp = new GameObject();
-            tmp.transform.localPosition = c.center;
-            combine[i + meshFilters.Length].mesh = meshList[i];
-            combine[i + meshFilters.Length].transform = tmp.transform.localToWorldMatrix;
-            c.triIndexArr[(int)list[i]] = startTriangleIndex;
-            triIndexList.Add(startTriangleIndex);
-            startTriangleIndex += 6;
-            Destroy(tmp);
-        }
+        GameObject tmp = new GameObject();
+        tmp.transform.localPosition = Vector3.zero;
+        c.triIndex = startTriangleIndex;
+        triIndexList.Add(startTriangleIndex);
+        startTriangleIndex += 6;
+        combine[meshFilters.Length].mesh = c.mesh;
+        combine[meshFilters.Length].transform = tmp.transform.localToWorldMatrix;
+        
+        Destroy(tmp);
+
         transform.GetComponent<MeshFilter>().mesh = new Mesh();
         transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine, true);
         transform.GetComponent<MeshFilter>().mesh.RecalculateBounds();
@@ -97,29 +73,84 @@ public class WorldMeshCube : MonoBehaviour {
 
     void addBlock(Vector3 center, Vector3 size)
     {
-        Vector3 s = center - size * 0.5f;
-        Vector3 e = center + size * 0.5f;
+        List<MeshQuad> listQuad = MeshQuad.getQuadList(center, size,QuadManager.DirList,this);
+        for (int i = 0; i < listQuad.Count; i++)
+            AddQuad(listQuad[i]);
+    }
 
-        List<MeshCube> list = octreeMeshNode.FindRangeList(s, e);
-        if(list.Count <= 0)
+    void AddQuad(MeshQuad quad)
+    {
+        List<MeshQuad> list = octreeMeshNode.FindRangeList(quad.VStart49, quad.VEnd49);
+        if (list.Count <= 0)
         {
-            List<MeshCube> listAround = octreeMeshNode.FindRangeList(s - Vector3.one, e + Vector3.one);
-            MeshCube c = new MeshCube(center, new Vector2(tileX, tileY) * tilePerc, Vector2.one * tilePerc);
-            List<int> triangleList = new List<int>();
-            if (listAround.Count > 0)
+            //List<MeshCube> listAround = octreeMeshNode.FindRangeList(s - Vector3.one, e + Vector3.one);
+
+            //List<int> triangleList = new List<int>();
+            /*if (listAround.Count > 0)
             {
                 for (int i = 0; i < listAround.Count; i++)
                 {
                     QuadManager.DIRECTION dir = c.tryDeleteMeshNearMeshCube(listAround[i]);
-                    if(dir != QuadManager.DIRECTION.max)
+                    if (dir != QuadManager.DIRECTION.max)
                         triangleList.Add(listAround[i].triIndexArr[(int)dir]);
                 }
             }
-            if(triangleList.Count > 0)
-                deleteTriangleList(triangleList);
-            octreeMeshNode.AddValue(new OctreeAble(c), s, e);
-            expend(c);
+            if (triangleList.Count > 0)
+                deleteTriangleList(triangleList);*/
+            if (loopMarge(quad) == true)
+                return;
+            octreeMeshNode.AddValue(new OctreeAble(quad), quad.VStart, quad.VEnd);
+            expend(quad);
         }
+        else if(list.Count > 0)
+        {
+            List<int> deleteList = new List<int>();
+            for(int i=0;i< list.Count;i++)
+            {
+                if (quad.normal == -list[i].normal)
+                    deleteList.Add(list[i].triIndex);
+            }
+            deleteTriangleList(deleteList);
+        }
+    }
+
+    bool loopMarge(MeshQuad t)
+    {
+        MeshQuad quad = t;
+        MeshQuad MargeTarget = null;
+        bool result = false;
+
+        while (true)
+        {
+            List<MeshQuad> searchList = octreeMeshNode.FindRangeList(quad.VStartPlus1, quad.VEndPlus1);
+            foreach (MeshQuad c in searchList)
+            {
+                if (quad.Equals(c))
+                    continue;
+                //print("find[" + (c.GetStartVector3()) + ">>" + (c.GetEndVector3()) + "]");
+                if (c.CheckCanMarge(quad))
+                {
+                    MargeTarget = c;
+                    break;
+                }
+            }
+
+            if (MargeTarget != null)
+            {
+                MargeTarget.ExpandQuadForMarge(quad);//ExpandQuad
+                quad.tree.PopValueAllParent(new OctreeAble(quad));
+                if (quad.triIndex != -1)
+                    print("DELETE QUAD");
+                MargeTarget.tree.updateValue(new OctreeAble(MargeTarget));
+                quad = MargeTarget;
+                MargeTarget = null;
+                if (result == false)
+                    result = true;
+            }
+            else if (MargeTarget == null)
+                break;
+        }
+        return result;
     }
 
     private int findTriangleTarget = 0;

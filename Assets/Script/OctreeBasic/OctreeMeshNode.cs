@@ -20,7 +20,7 @@ public class OctreeMeshNode : OctreeBasic
 
     public override bool AddValue(OctreeAble T, Vector3 s, Vector3 e)
     {
-        MeshCube t = T.mesh;
+        MeshQuad t = T.mesh;
         if (t == null) return false;
         if (level > 10) return false;
 
@@ -60,9 +60,9 @@ public class OctreeMeshNode : OctreeBasic
 
     public override void updateValue(OctreeAble T)
     {
-        MeshCube t = T.mesh;
-        Vector3 s = t.GetStartVector3();
-        Vector3 e = t.GetEndVector3();
+        MeshQuad t = T.mesh;
+        Vector3 s = t.VStart;
+        Vector3 e = t.VEnd;
         if (ValueInMyRangeCount(s, e) != 8)
         {//bigger this node. pop t and toss to parent
             PopValueAllParent(T);
@@ -79,13 +79,13 @@ public class OctreeMeshNode : OctreeBasic
         //else no update
     }
 
-    public List<MeshCube> FindRangeList(Vector3 s, Vector3 e)
+    public List<MeshQuad> FindRangeList(Vector3 s, Vector3 e)
     {
-        List<MeshCube> result = new List<MeshCube>();
+        List<MeshQuad> result = new List<MeshQuad>();
         //find My List
         foreach (OctreeAble c in list)
         {
-            if (InRange(s,e, c.mesh.center))
+            if (c.mesh.CheckThisQuadCollideRange(s,e))
                 result.Add(c.mesh);
         }
         //find ChildNodes List

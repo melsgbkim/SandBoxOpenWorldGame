@@ -4,27 +4,155 @@ using UnityEngine;
 
 public class MeshQuad
 {
-    Vector3[] vertices;
-    Vector3[] normal;
-    Vector2[] uv;
-    Vector3 center;
-    int[] tri;
+    public Vector3 normal;
+    public Vector2 uvSize;
+    public Vector3 center;
+    public Vector3 size;
     public int triIndex;
-    public MeshQuad(Vector3[] vertices, Vector3[] normal, Vector2[] uv, Vector3 center, int[] tri)
+    public WorldMeshCube parentMesh;
+    public Cube.TYPE type;
+
+    public OctreeMeshNode tree;
+
+    public Vector3 VStart { get { return center - size * 0.5f; } }
+    public Vector3 VEnd { get { return center + size * 0.5f; } }
+
+    public Vector3 VStart49 { get { return center - size * 0.49f; } }
+    public Vector3 VEnd49 { get { return center + size * 0.49f; } }
+
+    public Vector3 VStartPlus1 { get { return VStart - Vector3.ClampMagnitude(size, 0.5f); } }
+    public Vector3 VEndPlus1 { get { return VEnd + Vector3.ClampMagnitude(size, 0.5f); } }
+    public MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, Cube.TYPE type,WorldMeshCube parent)
     {
-        this.vertices = new Vector3[vertices.Length];
-        this.normal = new Vector3[normal.Length];
-        this.uv = new Vector2[uv.Length];
-        this.tri = new int[tri.Length];
-        int i = 0; while (i < vertices.Length) { this.vertices[i] = vertices[i]; }
-        int j = 0; while (j < normal.Length) { this.normal[j] = normal[j]; }
-        int k = 0; while (k < uv.Length) { this.uv[k] = uv[k]; }
-        int l = 0; while (l < tri.Length) { this.tri[l] = tri[l]; }
+        this.normal = normal;
+        this.uvSize = uvSize;
         this.center = center;
+        this.size = size;
+        this.type = type;
+        this.parentMesh = parent;
+
+        this.triIndex = -1;
+        tree = null;
     }
 
+    public Mesh mesh
+    {
+        get
+        {
+            Mesh mesh = new Mesh();
+            mesh.vertices = vertices;
+            mesh.normals = new Vector3[4] { normal, normal, normal, normal };
+            mesh.uv = new Vector2[4] { new Vector2(0, 0), new Vector2(uvSize.x, 0), new Vector2(0, uvSize.y), new Vector2(uvSize.x, uvSize.y) } ;
+            mesh.triangles = new int[6] { 0, 2, 1, 2, 3, 1 };
+            return mesh;
+        }
+    }
+    public Vector3[] vertices
+    {
+        get
+        {
+            Vector3[] result = new Vector3[4];
+            Quaternion rot = Quaternion.identity;
+            Vector2 tmpSize = new Vector2(size.x, size.y);
+            if (normal == Vector3.back)     {rot = Quaternion.identity;         tmpSize = new Vector2(size.x, size.y);}
+            if (normal == Vector3.forward)  {rot = Quaternion.Euler(0, 180, 0); tmpSize = new Vector2(size.x, size.y);}
+            if (normal == Vector3.right)    {rot = Quaternion.Euler(0, -90, 0);  tmpSize = new Vector2(size.z, size.y);}
+            if (normal == Vector3.left)     {rot = Quaternion.Euler(0, 90, 0); tmpSize = new Vector2(size.z, size.y);}
+            if (normal == Vector3.up)       {rot = Quaternion.Euler(90, 0, 0);  tmpSize = new Vector2(size.x, size.z);}
+            if (normal == Vector3.down)     {rot = Quaternion.Euler(-90, 0, 0); tmpSize = new Vector2(size.x, size.z);}
+            result[0] = center + rot * new Vector3(-0.5f * tmpSize.x, -0.5f * tmpSize.y, 0);
+            result[1] = center + rot * new Vector3(+0.5f * tmpSize.x, -0.5f * tmpSize.y, 0);
+            result[2] = center + rot * new Vector3(-0.5f * tmpSize.x, +0.5f * tmpSize.y, 0);
+            result[3] = center + rot * new Vector3(+0.5f * tmpSize.x, +0.5f * tmpSize.y, 0);
+            return result;
+        }
+    }
+
+
+    public bool CheckOtherCenterInMyRange(Vector3 c)
+    {
+        Vector3 S = VStart;
+        Vector3 E = VEnd;
+        return !((E.x < c.x) || (c.x < S.x) || (E.y < c.y) || (c.y < S.y) || (E.z < c.z) || (c.z < S.z));
+    }
+
+    public bool CheckThisQuadCollideRange(Vector3 s, Vector3 e)
+    {
+        Vector3 S = VStart;
+        Vector3 E = VEnd;
+        return !((E.x < s.x) || (e.x < S.x) || (E.y < s.y) || (e.y < S.y) || (E.z < s.z) || (e.z < S.z));
+    }
+
+    public bool CheckCanMarge(MeshQuad q)
+    {
+        MonoBehaviour.print("CHECK CAN MARGE");
+        return false;
+    }
+
+    public void ExpandQuadForMarge(MeshQuad other)
+    {
+        MonoBehaviour.print("EXPAND FOR MARGE");
+    }
+
+
+    public static List<MeshQuad> getQuadList(Vector3 center,Vector3 size, List<QuadManager.DIRECTION> dirList, WorldMeshCube p)
+    {
+        List<MeshQuad> result = new List<MeshQuad>();
+
+        int index = 0;
+        if (dirList[index] == QuadManager.DIRECTION.front)
+        {
+            index++;
+            result.Add(new MeshQuad(Vector3.back,       
+                new Vector2(size.x, size.y),
+                center + new Vector3(0, 0, -size.z) * 0.5f,
+                new Vector3(size.x, size.y, 0), p.type, p));
+        }
+        if (dirList[index] == QuadManager.DIRECTION.back)
+        {
+            index++;
+            result.Add(new MeshQuad(Vector3.forward,    
+                new Vector2(size.x, size.y),
+                center + new Vector3(0, 0, +size.z) * 0.5f,
+                new Vector3(size.x, size.y, 0), p.type, p));
+        }
+        if (dirList[index] == QuadManager.DIRECTION.right)
+        {
+            index++;
+            result.Add(new MeshQuad(Vector3.right,      
+                new Vector2(size.z, size.y),
+                center + new Vector3(size.x, 0, 0) * 0.5f,
+                new Vector3(0, size.y, size.z), p.type, p));
+        }
+        if (dirList[index] == QuadManager.DIRECTION.left)
+        {
+            index++;
+            result.Add(new MeshQuad(Vector3.left,       
+                new Vector2(size.z, size.y),
+                center + new Vector3(-size.x, 0, 0) * 0.5f,
+                new Vector3(0, size.y, size.z), p.type, p));
+        }
+        if (dirList[index] == QuadManager.DIRECTION.top)
+        {
+            index++;
+            result.Add(new MeshQuad(Vector3.up,         
+                new Vector2(size.x, size.z),
+                center + new Vector3(0, size.y, 0) * 0.5f,
+                new Vector3(size.x, 0, size.z), p.type, p));
+        }
+        if (dirList[index] == QuadManager.DIRECTION.bottom)
+        {
+            index++;
+            result.Add(new MeshQuad(Vector3.down,       
+                new Vector2(size.x, size.z),
+                center + new Vector3(0,-size.y, 0) * 0.5f, 
+                new Vector3(size.x, 0, size.z), p.type, p));
+        }
+        //MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, WorldMeshCube parent)
+        return result;
+    }
 }
- 
+ /*
 public class MeshCube
 {
     public OctreeMeshNode tree;
@@ -118,170 +246,116 @@ public class MeshCube
         if (dirList[index] == QuadManager.DIRECTION.front)
         {
             index++;
-            Vector3[] vertices = new Vector3[4];
-            Vector3[] normal = new Vector3[4];
-            Vector2[] uv = new Vector2[4];
-            int[] tri = new int[6];
+            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
+            SetDefault(out vertices, out normal, out uv, out tri);
 
             vertices[0] = new Vector3(-0.5f, -0.5f, -0.5f);
             vertices[1] = new Vector3(0.5f, -0.5f, -0.5f);
             vertices[2] = new Vector3(-0.5f, 0.5f, -0.5f);
             vertices[3] = new Vector3(0.5f, 0.5f, -0.5f);
             normal[0] = normal[1] = normal[2] = normal[3] = -Vector3.forward;
-            tri[0] = 0; tri[1] = 2; tri[2] = 1;
-            tri[3] = 2; tri[4] = 3; tri[5] = 1;
-            uv[0] = new Vector2(0, 0) + uvStart;
-            uv[1] = new Vector2(uvSize.x, 0) + uvStart;
-            uv[2] = new Vector2(0, uvSize.y) + uvStart;
-            uv[3] = new Vector2(uvSize.x, uvSize.y) + uvStart;
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.normals = normal;
-            mesh.uv = uv;
-            mesh.triangles = tri;
-            result.Add(mesh);
+            result.Add(CreateMesh(vertices, normal, uv, tri));
         }
         if (dirList[index] == QuadManager.DIRECTION.back)
         {
             index++;
-            Vector3[] vertices = new Vector3[4];
-            Vector3[] normal = new Vector3[4];
-            Vector2[] uv = new Vector2[4];
-            int[] tri = new int[6];
+            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
+            SetDefault(out vertices, out normal, out uv, out tri);
 
             vertices[0] = new Vector3(+0.5f, -0.5f, +0.5f);
             vertices[1] = new Vector3(-0.5f, -0.5f, +0.5f);
             vertices[2] = new Vector3(+0.5f, +0.5f, +0.5f);
             vertices[3] = new Vector3(-0.5f, +0.5f, +0.5f);
             normal[0] = normal[1] = normal[2] = normal[3] = Vector3.forward;
-            tri[0] = 0; tri[1] = 2; tri[2] = 1;
-            tri[3] = 2; tri[4] = 3; tri[5] = 1;
-            uv[0] = new Vector2(0, 0) + uvStart;
-            uv[1] = new Vector2(uvSize.x, 0) + uvStart;
-            uv[2] = new Vector2(0, uvSize.y) + uvStart;
-            uv[3] = new Vector2(uvSize.x, uvSize.y) + uvStart;
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.normals = normal;
-            mesh.uv = uv;
-            mesh.triangles = tri;
-            result.Add(mesh);
+            result.Add(CreateMesh(vertices, normal, uv, tri));
         }
         if (dirList[index] == QuadManager.DIRECTION.right)
         {
             index++;
-            Vector3[] vertices = new Vector3[4];
-            Vector3[] normal = new Vector3[4];
-            Vector2[] uv = new Vector2[4];
-            int[] tri = new int[6];
+            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
+            SetDefault(out vertices, out normal, out uv, out tri);
 
             vertices[0] = new Vector3(+0.5f, -0.5f, -0.5f);
             vertices[1] = new Vector3(+0.5f, -0.5f, +0.5f);
             vertices[2] = new Vector3(+0.5f, +0.5f, -0.5f);
             vertices[3] = new Vector3(+0.5f, +0.5f, +0.5f);
             normal[0] = normal[1] = normal[2] = normal[3] = Vector3.right;
-            tri[0] = 0; tri[1] = 2; tri[2] = 1;
-            tri[3] = 2; tri[4] = 3; tri[5] = 1;
-            uv[0] = new Vector2(0, 0) + uvStart;
-            uv[1] = new Vector2(uvSize.x, 0) + uvStart;
-            uv[2] = new Vector2(0, uvSize.y) + uvStart;
-            uv[3] = new Vector2(uvSize.x, uvSize.y) + uvStart;
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.normals = normal;
-            mesh.uv = uv;
-            mesh.triangles = tri;
-            result.Add(mesh);
+            result.Add(CreateMesh(vertices, normal, uv, tri));
         }
         if (dirList[index] == QuadManager.DIRECTION.left)
         {
             index++;
-            Vector3[] vertices = new Vector3[4];
-            Vector3[] normal = new Vector3[4];
-            Vector2[] uv = new Vector2[4];
-            int[] tri = new int[6];
+            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
+            SetDefault(out vertices, out normal, out uv, out tri);
 
             vertices[0] = new Vector3(-0.5f, -0.5f, +0.5f);
             vertices[1] = new Vector3(-0.5f, -0.5f, -0.5f);
             vertices[2] = new Vector3(-0.5f, +0.5f, +0.5f);
             vertices[3] = new Vector3(-0.5f, +0.5f, -0.5f);
             normal[0] = normal[1] = normal[2] = normal[3] = Vector3.left;
-            tri[0] = 0; tri[1] = 2; tri[2] = 1;
-            tri[3] = 2; tri[4] = 3; tri[5] = 1;
-            uv[0] = new Vector2(0, 0) + uvStart;
-            uv[1] = new Vector2(uvSize.x, 0) + uvStart;
-            uv[2] = new Vector2(0, uvSize.y) + uvStart;
-            uv[3] = new Vector2(uvSize.x, uvSize.y) + uvStart;
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.normals = normal;
-            mesh.uv = uv;
-            mesh.triangles = tri;
-            result.Add(mesh);
+            result.Add(CreateMesh(vertices, normal, uv, tri));
         }
         if (dirList[index] == QuadManager.DIRECTION.top)
         {
             index++;
-            Vector3[] vertices = new Vector3[4];
-            Vector3[] normal = new Vector3[4];
-            Vector2[] uv = new Vector2[4];
-            int[] tri = new int[6];
+            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
+            SetDefault(out vertices, out normal, out uv, out tri);
 
             vertices[0] = new Vector3(-0.5f, +0.5f, -0.5f);
             vertices[1] = new Vector3(+0.5f, +0.5f, -0.5f);
             vertices[2] = new Vector3(-0.5f, +0.5f, +0.5f);
             vertices[3] = new Vector3(+0.5f, +0.5f, +0.5f);
             normal[0] = normal[1] = normal[2] = normal[3] = Vector3.up;
-            tri[0] = 0; tri[1] = 2; tri[2] = 1;
-            tri[3] = 2; tri[4] = 3; tri[5] = 1;
-            uv[0] = new Vector2(0, 0) + uvStart;
-            uv[1] = new Vector2(uvSize.x, 0) + uvStart;
-            uv[2] = new Vector2(0, uvSize.y) + uvStart;
-            uv[3] = new Vector2(uvSize.x, uvSize.y) + uvStart;
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.normals = normal;
-            mesh.uv = uv;
-            mesh.triangles = tri;
-            result.Add(mesh);
+            result.Add(CreateMesh(vertices, normal, uv, tri));
         }
         if (dirList[index] == QuadManager.DIRECTION.bottom)
         {
             index++;
-            Vector3[] vertices = new Vector3[4];
-            Vector3[] normal = new Vector3[4];
-            Vector2[] uv = new Vector2[4];
-            int[] tri = new int[6];
+            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
+            SetDefault(out vertices, out normal, out uv, out tri);
 
             vertices[0] = new Vector3(-0.5f, -0.5f, +0.5f);
             vertices[1] = new Vector3(+0.5f, -0.5f, +0.5f);
             vertices[2] = new Vector3(-0.5f, -0.5f, -0.5f);
             vertices[3] = new Vector3(+0.5f, -0.5f, -0.5f);
             normal[0] = normal[1] = normal[2] = normal[3] = Vector3.down;
-            tri[0] = 0; tri[1] = 2; tri[2] = 1;
-            tri[3] = 2; tri[4] = 3; tri[5] = 1;
-            uv[0] = new Vector2(0, 0) + uvStart;
-            uv[1] = new Vector2(uvSize.x, 0) + uvStart;
-            uv[2] = new Vector2(0, uvSize.y) + uvStart;
-            uv[3] = new Vector2(uvSize.x, uvSize.y) + uvStart;
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.normals = normal;
-            mesh.uv = uv;
-            mesh.triangles = tri;
-            result.Add(mesh);
+            result.Add(CreateMesh(vertices, normal, uv, tri));
         }
 
         return result;
+    }
+    public void SetDefault(out Vector3[] vertices, out Vector3[] normal, out Vector2[] uv, out int[] tri)
+    {
+        vertices = new Vector3[4];
+        normal = new Vector3[4];
+        uv = new Vector2[4];
+        tri = new int[6];
+
+        tri[0] = 0; tri[1] = 2; tri[2] = 1;
+        tri[3] = 2; tri[4] = 3; tri[5] = 1;
+        uv[0] = new Vector2(0, 0) + uvStart;
+        uv[1] = new Vector2(uvSize.x, 0) + uvStart;
+        uv[2] = new Vector2(0, uvSize.y) + uvStart;
+        uv[3] = new Vector2(uvSize.x, uvSize.y) + uvStart;
+    }
+
+    Mesh CreateMesh(Vector3[] vertices,Vector3[] normal,Vector2[] uv,int[] tri)
+    {
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices;
+        mesh.normals = normal;
+        mesh.uv = uv;
+        mesh.triangles = tri;
+        return mesh;
     }
 
 
     public Vector3 GetStartVector3() { return center - Vector3.one / 2f; }
     public Vector3 GetEndVector3() { return center + Vector3.one / 2f; }
-}
+}*/
