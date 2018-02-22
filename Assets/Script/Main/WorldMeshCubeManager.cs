@@ -22,15 +22,13 @@ public class WorldMeshCubeManager : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Keypad1)) targetType = Cube.TYPE.Grass;
         if (Input.GetKeyDown(KeyCode.Keypad2)) targetType = Cube.TYPE.Dirt;
-
-        if(max > 0)
+        if (max > 0)
         {
             for (int i = 0; i < max; i++)
             {
-                if (pos.x < -50)
-                    pos = new Vector3(0, 0, pos.z + 1);
+
                 NewMeshCube(pos,targetType);
-                pos += Vector3.left;
+                pos += Vector3.forward;
             }
         }
         
@@ -41,6 +39,13 @@ public class WorldMeshCubeManager : MonoBehaviour {
         if (MeshCubeManagerTable.ContainsKey(type) == false)
             NewMeshCubeToHashTable(type);
         (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center);
+    }
+
+    void NewMeshCube(Vector3 center, Cube.TYPE type,Vector3 size)
+    {
+        if (MeshCubeManagerTable.ContainsKey(type) == false)
+            NewMeshCubeToHashTable(type);
+        (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center, size);
     }
 
     void NewMeshCubeToHashTable(Cube.TYPE type)

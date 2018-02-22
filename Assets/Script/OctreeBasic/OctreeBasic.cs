@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct OctreeAble
+public struct TreeAble
 {
     public Object obj;
     public MeshQuad mesh;
-    public OctreeAble(Object obj) { this.obj = obj; mesh = null; }
-    public OctreeAble(MeshQuad mesh) { this.mesh = mesh; obj = null; }
+    public TreeAble(Object obj) { this.obj = obj; mesh = null; }
+    public TreeAble(MeshQuad mesh) { this.mesh = mesh; obj = null; }
 }
 
 public class OctreeBasic
@@ -36,7 +36,7 @@ public class OctreeBasic
     protected float size;
     protected int level;
     public int count;
-    protected List<OctreeAble> list;
+    protected List<TreeAble> list;
 
     protected Vector3 firstS;
     protected Vector3 firstE;
@@ -69,7 +69,7 @@ public class OctreeBasic
     }
 
     
-    public void PopValueAllParent(OctreeAble t)
+    public void PopValueAllParent(TreeAble t)
     {
         PopValue(t);
         if (parent != null)
@@ -135,7 +135,7 @@ public class OctreeBasic
         parent = null;
         childNodes = new OctreeBasic[8];
         for (int i = 0; i < 8; i++) childNodes[i] = null;
-        list = new List<OctreeAble>();
+        list = new List<TreeAble>();
         level = 0;
         count = 0;
     }
@@ -143,14 +143,14 @@ public class OctreeBasic
     {
         return new OctreeBasic(Parent, S, E, root, name);
     }
-    public virtual void PopValue(OctreeAble t)
+    public virtual void PopValue(TreeAble t)
     {
         count--;
         list.Remove(t);
     }
-    public virtual bool AddValue(OctreeAble t, Vector3 s, Vector3 e) { return false; }
-    public virtual void updateValue(OctreeAble t){}
-    public virtual bool checkChildNodeCanAddValue(OctreeAble t, Vector3 s, Vector3 e){ return false; }
-    public virtual bool tyrChildNodeCanAddValue(OctreeAble t, Vector3 s, Vector3 e){ return false; }
+    public virtual bool AddValue(TreeAble t, Vector3 s, Vector3 e) { return false; }
+    public virtual void updateValue(TreeAble t){}
+    public virtual bool checkChildNodeCanAddValue(TreeAble t, Vector3 s, Vector3 e){ return false; }
+    public virtual bool tyrChildNodeCanAddValue(TreeAble t, Vector3 s, Vector3 e){ return false; }
 }
 

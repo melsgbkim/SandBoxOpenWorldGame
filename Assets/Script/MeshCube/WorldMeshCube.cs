@@ -9,21 +9,24 @@ public class WorldMeshCube : MonoBehaviour {
     public float tileY = 0;
     float tilePerc = 1 / 64f;
 
-    static OctreeMeshNode octreeMeshNode = null;
+    //static QuadTreeMeshNode quadtreeMeshNode = null;
     int startTriangleIndex = 0;
     // Use this for initialization
-
 
     List<int> triIndexList = new List<int>();
     public Cube.TYPE type;
 
+    static QuadTreeIndexList[] TreeIndexArr = null;
+
     public void Init() {
         tilePerc = 1;
         this.GetComponent<MeshFilter>().mesh = new Mesh();
-        if(octreeMeshNode == null)
+        if(TreeIndexArr == null)
         {
-            octreeMeshNode = new OctreeMeshNode();
-            octreeMeshNode.SetRoot();
+            TreeIndexArr = new QuadTreeIndexList[3];
+            TreeIndexArr[0] = new QuadTreeIndexList();
+            TreeIndexArr[1] = new QuadTreeIndexList();
+            TreeIndexArr[2] = new QuadTreeIndexList();
         }
     }
 
@@ -71,16 +74,27 @@ public class WorldMeshCube : MonoBehaviour {
         addBlock(center, Vector3.one);
     }
 
-    void addBlock(Vector3 center, Vector3 size)
+    public void addBlock(Vector3 center, Vector3 size)
     {
         List<MeshQuad> listQuad = MeshQuad.getQuadList(center, size,QuadManager.DirList,this);
         for (int i = 0; i < listQuad.Count; i++)
             AddQuad(listQuad[i]);
     }
 
+    QuadTreeMeshNode GetTree(MeshQuad quad)
+    {
+        if (quad.normal.x == 0 && quad.normal.y == 0) return TreeIndexArr[0].GetTree(quad);//front back
+        if (quad.normal.z == 0 && quad.normal.y == 0) return TreeIndexArr[1].GetTree(quad);//right left
+        if (quad.normal.x == 0 && quad.normal.z == 0) return TreeIndexArr[2].GetTree(quad);//up down
+        return null;
+    }
+
     void AddQuad(MeshQuad quad)
     {
-        List<MeshQuad> list = octreeMeshNode.FindRangeList(quad.VStart49, quad.VEnd49);
+        QuadTreeMeshNode quadtreeMeshNode = quad.tree;
+        if(quadtreeMeshNode == null)
+            quadtreeMeshNode = GetTree(quad);
+        List<MeshQuad> list = quadtreeMeshNode.FindRangeList(quad.V2Start49, quad.V2End49);
         if (list.Count <= 0)
         {
             //List<MeshCube> listAround = octreeMeshNode.FindRangeList(s - Vector3.one, e + Vector3.one);
@@ -97,32 +111,71 @@ public class WorldMeshCube : MonoBehaviour {
             }
             if (triangleList.Count > 0)
                 deleteTriangleList(triangleList);*/
-            if (loopMarge(quad) == true)
+            if (loopMarge(quad, quadtreeMeshNode) == true)
                 return;
-            octreeMeshNode.AddValue(new OctreeAble(quad), quad.VStart, quad.VEnd);
+            quadtreeMeshNode.AddValue(new TreeAble(quad), quad.V2Start, quad.V2End);
             expend(quad);
         }
         else if(list.Count > 0)
         {
+            Hashtable deleteTable = new Hashtable();
             List<int> deleteList = new List<int>();
             for(int i=0;i< list.Count;i++)
             {
                 if (quad.normal == -list[i].normal)
-                    deleteList.Add(list[i].triIndex);
+                {
+                    deleteQuad(quad.V2Start, quad.V2End, list[i]);
+                    if (deleteTable.ContainsKey(list[i].parentMesh) == false)
+                        deleteTable.Add(list[i].parentMesh, new List<int>());
+                    (deleteTable[list[i].parentMesh]as List<int>).Add(list[i].triIndex);
+                }
             }
-            deleteTriangleList(deleteList);
+            if (deleteTable.Count > 0)
+            {
+                foreach (WorldMeshCube q in deleteTable.Keys)
+                {
+                    q.deleteTriangleList(deleteTable[q] as List<int>);
+                }
+            }
         }
     }
 
-    bool loopMarge(MeshQuad t)
+    public bool deleteQuad(Vector3 s, Vector3 e, MeshQuad target)
+    {
+        List<QuadRangeData> splitList = target.getSplitCubeListbyRange(s, e);
+        target.tree.PopValueAllParent(new TreeAble(target));
+        //DestroyImmediate(target.gameObject);
+        //print("splitList.Count : " + splitList.Count);
+        int count = 0;
+        foreach (QuadRangeData data in splitList)
+        {
+            if (data.deleteRange == false)
+            {
+                //print("Child(" + data.StartBlockRange + ">>" + data.EndBlockRange + ")(" + data.start + ">>" + data.end + ")");
+                AddQuad(new MeshQuad(target.normal, data.uv, data.center, data.size, target.type, this));
+                count += 1;
+            }
+        }
+        if (count == 0)
+        {
+            //loopMargeFromDeletedCube((s + e) / 2f);
+        }
+        return true;
+    }
+
+    bool loopMarge(MeshQuad t, QuadTreeMeshNode tree)
     {
         MeshQuad quad = t;
         MeshQuad MargeTarget = null;
         bool result = false;
+        QuadTreeMeshNode quadtreeMeshNode = tree;
+        if(quadtreeMeshNode == null)
+            quadtreeMeshNode = GetTree(quad);
+        
 
         while (true)
         {
-            List<MeshQuad> searchList = octreeMeshNode.FindRangeList(quad.VStartPlus1, quad.VEndPlus1);
+            List<MeshQuad> searchList = quadtreeMeshNode.FindRangeList(quad.V2StartPlus1, quad.V2EndPlus1);
             foreach (MeshQuad c in searchList)
             {
                 if (quad.Equals(c))
@@ -138,10 +191,15 @@ public class WorldMeshCube : MonoBehaviour {
             if (MargeTarget != null)
             {
                 MargeTarget.ExpandQuadForMarge(quad);//ExpandQuad
-                quad.tree.PopValueAllParent(new OctreeAble(quad));
+                if(quad.tree != null)
+                    quad.tree.PopValueAllParent(new TreeAble(quad));
                 if (quad.triIndex != -1)
-                    print("DELETE QUAD");
-                MargeTarget.tree.updateValue(new OctreeAble(MargeTarget));
+                {
+                    List<int> tmp = new List<int>();tmp.Add(quad.triIndex);
+                    deleteTriangleList(tmp);
+                }
+                MargeTarget.tree.updateValue(new TreeAble(MargeTarget));
+                updateTriangleList(MargeTarget);
                 quad = MargeTarget;
                 MargeTarget = null;
                 if (result == false)
@@ -163,6 +221,33 @@ public class WorldMeshCube : MonoBehaviour {
         findTriangleTarget = val;
         return findTriangleIndex;
     }
+    void updateTriangleList(List<MeshQuad> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+            updateTriangleList(list[i]);
+    }
+    void updateTriangleList(MeshQuad q)
+    {
+        Vector3[] origin = transform.GetComponent<MeshFilter>().mesh.vertices;
+        Vector2[] uv = transform.GetComponent<MeshFilter>().mesh.uv;
+        int index = triIndexList.FindIndex(FindInt(q.triIndex)) * 4;
+        Vector3[] ver = q.vertices;
+        Vector2[] uvs = q.UVs;
+        origin[index + 0] = ver[0];
+        origin[index + 1] = ver[1];
+        origin[index + 2] = ver[2];
+        origin[index + 3] = ver[3];
+
+        uv[index + 0] = uvs[0];
+        uv[index + 1] = uvs[1];
+        uv[index + 2] = uvs[2];
+        uv[index + 3] = uvs[3];
+
+
+        transform.GetComponent<MeshFilter>().mesh.vertices = origin;
+        transform.GetComponent<MeshFilter>().mesh.uv = uv;
+    }
+
     void deleteTriangleList(List<int> list)
     {
         CombineInstance[] combine = new CombineInstance[1];

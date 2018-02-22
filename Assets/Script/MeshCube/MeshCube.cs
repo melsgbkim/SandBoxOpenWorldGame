@@ -12,7 +12,7 @@ public class MeshQuad
     public WorldMeshCube parentMesh;
     public Cube.TYPE type;
 
-    public OctreeMeshNode tree;
+    public QuadTreeMeshNode tree;
 
     public Vector3 VStart { get { return center - size * 0.5f; } }
     public Vector3 VEnd { get { return center + size * 0.5f; } }
@@ -22,6 +22,66 @@ public class MeshQuad
 
     public Vector3 VStartPlus1 { get { return VStart - Vector3.ClampMagnitude(size, 0.5f); } }
     public Vector3 VEndPlus1 { get { return VEnd + Vector3.ClampMagnitude(size, 0.5f); } }
+
+    public Vector2 V2Start { get { return V2Center - V2size * 0.5f; } }
+    public Vector2 V2End { get { return V2Center + V2size * 0.5f; } }
+
+    public Vector2 V2Start49 { get { return V2Center - V2size * 0.49f; } }
+    public Vector2 V2End49 { get { return V2Center + V2size * 0.49f; } }
+
+    public Vector2 V2StartPlus1 { get { return V2Start - Vector2.ClampMagnitude(V2size, 0.5f); } }
+    public Vector2 V2EndPlus1 { get { return V2End + Vector2.ClampMagnitude(V2size, 0.5f); } }
+
+    public Vector3 V2toV3Center(Vector2 v)
+    {
+        if (normal.x == 0 && normal.y == 0) { return new Vector3(v.x, v.y, center.z); }
+        if (normal.x == 0 && normal.z == 0) { return new Vector3(v.x, center.y, v.y); }
+        if (normal.z == 0 && normal.y == 0) { return new Vector3(center.x, v.y, v.x); }
+        return Vector3.zero;
+    }
+
+    public Vector3 V2toV3Size(Vector2 v)
+    {
+        if (normal.x == 0 && normal.y == 0) { return new Vector3(v.x, v.y, 0); }
+        if (normal.x == 0 && normal.z == 0) { return new Vector3(v.x, 0, v.y); }
+        if (normal.z == 0 && normal.y == 0) { return new Vector3(0, v.y, v.x); }
+        return Vector3.zero;
+    }
+
+    public Vector2 V2Center
+    {
+        get
+        {
+            if (normal.x == 0 && normal.y == 0) return new Vector2(center.x, center.y);
+            if (normal.x == 0 && normal.z == 0) return new Vector2(center.x, center.z);
+            if (normal.z == 0 && normal.y == 0) return new Vector2(center.z, center.y);
+            return Vector2.zero;
+        }
+        set
+        {
+            if (normal.x == 0 && normal.y == 0) {center.x = value.x; center.y = value.y;}
+            if (normal.x == 0 && normal.z == 0) {center.x = value.x; center.z = value.y;}
+            if (normal.z == 0 && normal.y == 0) {center.z = value.x; center.y = value.y;}
+        }
+    }
+
+    public Vector2 V2size
+    {
+        get
+        {
+            if (normal.x == 0 && normal.y == 0) return new Vector2(size.x, size.y);
+            if (normal.x == 0 && normal.z == 0) return new Vector2(size.x, size.z);
+            if (normal.z == 0 && normal.y == 0) return new Vector2(size.z, size.y);
+            return Vector2.zero;
+        }
+        set
+        {
+            if (normal.x == 0 && normal.y == 0) { size.x = value.x; size.y = value.y; }
+            if (normal.x == 0 && normal.z == 0) { size.x = value.x; size.z = value.y; }
+            if (normal.z == 0 && normal.y == 0) { size.z = value.x; size.y = value.y; }
+        }
+    }
+
     public MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, Cube.TYPE type,WorldMeshCube parent)
     {
         this.normal = normal;
@@ -42,9 +102,23 @@ public class MeshQuad
             Mesh mesh = new Mesh();
             mesh.vertices = vertices;
             mesh.normals = new Vector3[4] { normal, normal, normal, normal };
-            mesh.uv = new Vector2[4] { new Vector2(0, 0), new Vector2(uvSize.x, 0), new Vector2(0, uvSize.y), new Vector2(uvSize.x, uvSize.y) } ;
+            mesh.uv = UVs;
             mesh.triangles = new int[6] { 0, 2, 1, 2, 3, 1 };
             return mesh;
+        }
+    }
+
+    public Vector2[] UVs
+    {
+        get
+        {
+            return new Vector2[4] 
+            {
+                new Vector2(0, 0),
+                new Vector2(uvSize.x, 0),
+                new Vector2(0, uvSize.y),
+                new Vector2(uvSize.x, uvSize.y)
+            };
         }
     }
     public Vector3[] vertices
@@ -60,38 +134,70 @@ public class MeshQuad
             if (normal == Vector3.left)     {rot = Quaternion.Euler(0, 90, 0); tmpSize = new Vector2(size.z, size.y);}
             if (normal == Vector3.up)       {rot = Quaternion.Euler(90, 0, 0);  tmpSize = new Vector2(size.x, size.z);}
             if (normal == Vector3.down)     {rot = Quaternion.Euler(-90, 0, 0); tmpSize = new Vector2(size.x, size.z);}
-            result[0] = center + rot * new Vector3(-0.5f * tmpSize.x, -0.5f * tmpSize.y, 0);
-            result[1] = center + rot * new Vector3(+0.5f * tmpSize.x, -0.5f * tmpSize.y, 0);
-            result[2] = center + rot * new Vector3(-0.5f * tmpSize.x, +0.5f * tmpSize.y, 0);
-            result[3] = center + rot * new Vector3(+0.5f * tmpSize.x, +0.5f * tmpSize.y, 0);
+            result[0] = (center + rot * new Vector3(-0.5f * tmpSize.x, -0.5f * tmpSize.y, 0)) / 3f;
+            result[1] = (center + rot * new Vector3(+0.5f * tmpSize.x, -0.5f * tmpSize.y, 0)) / 3f;
+            result[2] = (center + rot * new Vector3(-0.5f * tmpSize.x, +0.5f * tmpSize.y, 0)) / 3f;
+            result[3] = (center + rot * new Vector3(+0.5f * tmpSize.x, +0.5f * tmpSize.y, 0)) / 3f;
             return result;
         }
     }
 
 
-    public bool CheckOtherCenterInMyRange(Vector3 c)
+    public bool CheckOtherCenterInMyRange(Vector2 c)
     {
-        Vector3 S = VStart;
-        Vector3 E = VEnd;
-        return !((E.x < c.x) || (c.x < S.x) || (E.y < c.y) || (c.y < S.y) || (E.z < c.z) || (c.z < S.z));
+        Vector2 S = V2Start;
+        Vector2 E = V2End;
+        return !((E.x < c.x) || (c.x < S.x) || (E.y < c.y) || (c.y < S.y));
     }
 
-    public bool CheckThisQuadCollideRange(Vector3 s, Vector3 e)
+    public bool CheckThisQuadCollideRange(Vector2 s, Vector2 e)
     {
-        Vector3 S = VStart;
-        Vector3 E = VEnd;
-        return !((E.x < s.x) || (e.x < S.x) || (E.y < s.y) || (e.y < S.y) || (E.z < s.z) || (e.z < S.z));
+        Vector2 S = V2Start;
+        Vector2 E = V2End;
+        return !((E.x < s.x) || (e.x < S.x) || (E.y < s.y) || (e.y < S.y));
     }
 
     public bool CheckCanMarge(MeshQuad q)
     {
-        MonoBehaviour.print("CHECK CAN MARGE");
-        return false;
+        if (q.normal != this.normal)
+            return false;
+        Vector2 c = q.V2Center;
+        Vector2 s = q.V2size * 0.5f;
+
+        Vector2 C = V2Center;
+        Vector2 S = V2size * 0.5f;
+            return (
+            (c + new Vector2(0, s.y) == C - new Vector2(0, S.y) || (c - new Vector2(0, s.y) == C + new Vector2(0, S.y)) && s.x == S.x) ||
+            (c + new Vector2(s.x, 0) == C - new Vector2(S.x, 0) || (c - new Vector2(s.x, 0) == C + new Vector2(S.x, 0)) && s.y == S.y)
+            );
     }
 
     public void ExpandQuadForMarge(MeshQuad other)
     {
-        MonoBehaviour.print("EXPAND FOR MARGE");
+        Vector2 c = other.V2Center;
+        Vector2 s = other.V2size * 0.5f;
+
+        Vector2 C = V2Center;
+        Vector2 S = V2size * 0.5f;
+
+        Vector2 center = Vector2.zero; 
+        Vector2 Size = Vector2.zero; 
+        if (c + new Vector2(0, s.y) == C - new Vector2(0, S.y) || (c - new Vector2(0, s.y) == C + new Vector2(0, S.y)) && s.x == S.x)
+        {
+                 if (c + new Vector2(0, s.y) == C - new Vector2(0, S.y)) V2Center = new Vector2(C.x, ((c.y - s.y) + (C.y + S.y)) * 0.5f);
+            else if (c - new Vector2(0, s.y) == C + new Vector2(0, S.y)) V2Center = new Vector2(C.x, ((c.y + s.y) + (C.y - S.y)) * 0.5f);
+            V2size = V2size + new Vector2(0, other.V2size.y);
+        }
+        else if (c + new Vector2(s.x, 0) == C - new Vector2(S.x, 0) || (c - new Vector2(s.x, 0) == C + new Vector2(S.x, 0)) && s.y == S.y)
+        {
+                 if (c + new Vector2(s.x, 0) == C - new Vector2(S.x, 0)) V2Center = new Vector2(((c.x - s.x) + (C.x + S.x)) * 0.5f, C.y);
+            else if (c - new Vector2(s.x, 0) == C + new Vector2(S.x, 0)) V2Center = new Vector2(((c.x + s.x) + (C.x - S.x)) * 0.5f, C.y);
+            V2size = V2size + new Vector2(other.V2size.x, 0);
+        }
+
+        uvSize = V2size;
+
+        //MonoBehaviour.print("EXPAND FOR MARGE");
     }
 
 
@@ -151,211 +257,85 @@ public class MeshQuad
         //MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, WorldMeshCube parent)
         return result;
     }
+
+    public List<QuadRangeData> getSplitCubeListbyRange(Vector2 s, Vector2 e)
+    {
+        List<QuadRangeData> result = new List<QuadRangeData>();
+        List<float> x = new List<float>();
+        List<float> y = new List<float>();
+        Vector3 S = V2Start;
+        Vector3 E = V2End;
+        /*
+        if (s.x < S.x) x.Add(S.x); else x.Add(s.x);
+        if (e.x > E.x) x.Add(E.x); else x.Add(e.x);
+        if (s.y < S.y) y.Add(S.y); else y.Add(s.y);
+        if (e.y > E.y) y.Add(E.y); else y.Add(e.y);
+        if (s.z < S.z) z.Add(S.z); else z.Add(s.z);
+        if (e.z > E.z) z.Add(E.z); else z.Add(e.z);
+        */
+        if(S.x < s.x) x.Add(s.x);else x.Add(S.x);
+        if(E.x > e.x) x.Add(e.x);else x.Add(E.x);
+        if(S.y < s.y) y.Add(s.y);else y.Add(S.y);
+        if(E.y > e.y) y.Add(e.y);else y.Add(E.y);
+        x.Add(S.x);
+        x.Add(E.x);
+        y.Add(S.y);
+        y.Add(E.y);
+
+        x.Sort(sortFloatASC);
+        y.Sort(sortFloatASC);
+        for (int iy = 0; iy < 3; iy++)
+        {
+            for (int ix = 0; ix < 3; ix++)
+            {
+                if (x[ix + 1] - x[ix] >= 1f && y[iy + 1] - y[iy] >= 1f)
+                {
+                    Vector2 insertS = new Vector2(x[ix], y[iy]);
+                    Vector2 insertE = new Vector2(x[ix + 1], y[iy + 1]);
+                    //print("x(" + ix + ")  y(" + iy + ")  z(" + iz + ")"+"Split (" + insertS + ">>" + insertE + ")  "+ (x[ix] == s.x && y[iy] == s.y && z[iz] == s.z && x[ix + 1] == e.x && y[iy + 1] == e.y && z[iz + 1] == e.z));
+                    result.Add(new QuadRangeData(this, V2toV3Center(insertS), V2toV3Center(insertE), insertE - insertS, (x[ix] == s.x && y[iy] == s.y &&x[ix + 1] == e.x && y[iy + 1] == e.y)));
+                }
+            }
+        }
+        return result;
+    }
+    int sortFloatASC(float a, float b)
+    {
+        if (a > b) return 1;
+        if (a == b) return 0;
+        return -1;
+    }
 }
- /*
-public class MeshCube
+
+public class QuadRangeData
 {
-    public OctreeMeshNode tree;
-    public Vector3 center;
-    public bool[] quadArr = new bool[(int)(QuadManager.DIRECTION.max)];
-    public int[] triIndexArr = new int[(int)(QuadManager.DIRECTION.max)];
-
-    public static List<int> triIndexList = new List<int>();
-    Vector2 uvStart;
-    Vector2 uvSize;
-    public MeshCube(Vector3 center, Vector2 uvStart, Vector2 uvSize)
+    MeshQuad parent = null;
+    public bool deleteRange = false;
+    public QuadRangeData(MeshQuad p, Vector3 s, Vector3 e, Vector2 uv ,bool delete)
     {
-        for (int i = 0; i < (int)QuadManager.DirList.Count; i++)
-        {
-            triIndexArr[i] = 0;
-            quadArr[i] = true;
-        }
-        this.center = center;
-        this.uvStart = uvStart;
-        this.uvSize = uvSize;
+        this.uv = uv;
+        parent = p;
+        start = s;
+        end = e;
+        deleteRange = delete;
     }
-
-    public QuadManager.DIRECTION tryDeleteMeshNearMeshCube(MeshCube other)
+    public Vector2 uv;
+    public Vector3 start;
+    public Vector3 end;
+    public Vector3 center
     {
-        QuadManager.DIRECTION result = QuadManager.DIRECTION.max;
-        if (((other.center - center) - Vector3.back).sqrMagnitude < 0.1f)
-        {
-            quadArr[(int)QuadManager.DIRECTION.front] = false;
-            result = QuadManager.DIRECTION.back;
-        }
-
-        if (((other.center - center) - Vector3.forward).sqrMagnitude < 0.1f)
-        {
-            quadArr[(int)QuadManager.DIRECTION.back] = false;
-            result = QuadManager.DIRECTION.front;
-        }
-
-        if (((other.center - center) - Vector3.right).sqrMagnitude < 0.1f)
-        {
-            quadArr[(int)QuadManager.DIRECTION.right] = false;
-            result = QuadManager.DIRECTION.left;
-        }
-
-        if (((other.center - center) - Vector3.left).sqrMagnitude < 0.1f)
-        {
-            quadArr[(int)QuadManager.DIRECTION.left] = false;
-            result = QuadManager.DIRECTION.right;
-        }
-
-        if (((other.center - center) - Vector3.up).sqrMagnitude < 0.1f)
-        {
-            quadArr[(int)QuadManager.DIRECTION.top] = false;
-            result = QuadManager.DIRECTION.bottom;
-        }
-
-        if (((other.center - center) - Vector3.down).sqrMagnitude < 0.1f)
-        {
-            quadArr[(int)QuadManager.DIRECTION.bottom] = false;
-            result = QuadManager.DIRECTION.top;
-        }
-        return result;
+        get { return (start + end) / 2f; }
     }
-
-    public int getActiveDirCount()
+    public Vector3 size
     {
-        int result = 0;
-        for (int i = 0; i < (int)QuadManager.DIRECTION.max; i++)
-        {
-            if (quadArr[i])
-                result++;
-        }
-        return result;
+        get { return end - start; }
     }
-
-    public List<QuadManager.DIRECTION> getActiveDirList()
+    public Vector3 StartBlockRange
     {
-        List<QuadManager.DIRECTION> result = new List<QuadManager.DIRECTION>();
-        for (int i = 0; i < (int)QuadManager.DirList.Count; i++)
-        {
-            if (quadArr[i])
-                result.Add(QuadManager.DirList[i]);
-        }
-        return result;
+        get { return start + Vector3.one / 2f; }
     }
-
-    public List<Mesh> getMeshList(List<QuadManager.DIRECTION> dirList, Vector2 uvStart, Vector2 uvSize)
+    public Vector3 EndBlockRange
     {
-        List<Mesh> result = new List<Mesh>();
-
-        int index = 0;
-        if (dirList[index] == QuadManager.DIRECTION.front)
-        {
-            index++;
-            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
-            SetDefault(out vertices, out normal, out uv, out tri);
-
-            vertices[0] = new Vector3(-0.5f, -0.5f, -0.5f);
-            vertices[1] = new Vector3(0.5f, -0.5f, -0.5f);
-            vertices[2] = new Vector3(-0.5f, 0.5f, -0.5f);
-            vertices[3] = new Vector3(0.5f, 0.5f, -0.5f);
-            normal[0] = normal[1] = normal[2] = normal[3] = -Vector3.forward;
-
-            result.Add(CreateMesh(vertices, normal, uv, tri));
-        }
-        if (dirList[index] == QuadManager.DIRECTION.back)
-        {
-            index++;
-            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
-            SetDefault(out vertices, out normal, out uv, out tri);
-
-            vertices[0] = new Vector3(+0.5f, -0.5f, +0.5f);
-            vertices[1] = new Vector3(-0.5f, -0.5f, +0.5f);
-            vertices[2] = new Vector3(+0.5f, +0.5f, +0.5f);
-            vertices[3] = new Vector3(-0.5f, +0.5f, +0.5f);
-            normal[0] = normal[1] = normal[2] = normal[3] = Vector3.forward;
-
-            result.Add(CreateMesh(vertices, normal, uv, tri));
-        }
-        if (dirList[index] == QuadManager.DIRECTION.right)
-        {
-            index++;
-            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
-            SetDefault(out vertices, out normal, out uv, out tri);
-
-            vertices[0] = new Vector3(+0.5f, -0.5f, -0.5f);
-            vertices[1] = new Vector3(+0.5f, -0.5f, +0.5f);
-            vertices[2] = new Vector3(+0.5f, +0.5f, -0.5f);
-            vertices[3] = new Vector3(+0.5f, +0.5f, +0.5f);
-            normal[0] = normal[1] = normal[2] = normal[3] = Vector3.right;
-
-            result.Add(CreateMesh(vertices, normal, uv, tri));
-        }
-        if (dirList[index] == QuadManager.DIRECTION.left)
-        {
-            index++;
-            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
-            SetDefault(out vertices, out normal, out uv, out tri);
-
-            vertices[0] = new Vector3(-0.5f, -0.5f, +0.5f);
-            vertices[1] = new Vector3(-0.5f, -0.5f, -0.5f);
-            vertices[2] = new Vector3(-0.5f, +0.5f, +0.5f);
-            vertices[3] = new Vector3(-0.5f, +0.5f, -0.5f);
-            normal[0] = normal[1] = normal[2] = normal[3] = Vector3.left;
-
-            result.Add(CreateMesh(vertices, normal, uv, tri));
-        }
-        if (dirList[index] == QuadManager.DIRECTION.top)
-        {
-            index++;
-            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
-            SetDefault(out vertices, out normal, out uv, out tri);
-
-            vertices[0] = new Vector3(-0.5f, +0.5f, -0.5f);
-            vertices[1] = new Vector3(+0.5f, +0.5f, -0.5f);
-            vertices[2] = new Vector3(-0.5f, +0.5f, +0.5f);
-            vertices[3] = new Vector3(+0.5f, +0.5f, +0.5f);
-            normal[0] = normal[1] = normal[2] = normal[3] = Vector3.up;
-
-            result.Add(CreateMesh(vertices, normal, uv, tri));
-        }
-        if (dirList[index] == QuadManager.DIRECTION.bottom)
-        {
-            index++;
-            Vector3[] vertices, normal; Vector2[] uv; int[] tri;
-            SetDefault(out vertices, out normal, out uv, out tri);
-
-            vertices[0] = new Vector3(-0.5f, -0.5f, +0.5f);
-            vertices[1] = new Vector3(+0.5f, -0.5f, +0.5f);
-            vertices[2] = new Vector3(-0.5f, -0.5f, -0.5f);
-            vertices[3] = new Vector3(+0.5f, -0.5f, -0.5f);
-            normal[0] = normal[1] = normal[2] = normal[3] = Vector3.down;
-
-            result.Add(CreateMesh(vertices, normal, uv, tri));
-        }
-
-        return result;
+        get { return end - Vector3.one / 2f; }
     }
-    public void SetDefault(out Vector3[] vertices, out Vector3[] normal, out Vector2[] uv, out int[] tri)
-    {
-        vertices = new Vector3[4];
-        normal = new Vector3[4];
-        uv = new Vector2[4];
-        tri = new int[6];
-
-        tri[0] = 0; tri[1] = 2; tri[2] = 1;
-        tri[3] = 2; tri[4] = 3; tri[5] = 1;
-        uv[0] = new Vector2(0, 0) + uvStart;
-        uv[1] = new Vector2(uvSize.x, 0) + uvStart;
-        uv[2] = new Vector2(0, uvSize.y) + uvStart;
-        uv[3] = new Vector2(uvSize.x, uvSize.y) + uvStart;
-    }
-
-    Mesh CreateMesh(Vector3[] vertices,Vector3[] normal,Vector2[] uv,int[] tri)
-    {
-        Mesh mesh = new Mesh();
-        mesh.vertices = vertices;
-        mesh.normals = normal;
-        mesh.uv = uv;
-        mesh.triangles = tri;
-        return mesh;
-    }
-
-
-    public Vector3 GetStartVector3() { return center - Vector3.one / 2f; }
-    public Vector3 GetEndVector3() { return center + Vector3.one / 2f; }
-}*/
+}

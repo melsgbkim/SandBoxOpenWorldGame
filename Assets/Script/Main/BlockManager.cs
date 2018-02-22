@@ -33,9 +33,7 @@ public class BlockManager : MonoBehaviour {
         if(firstUpdate)
         {
             firstUpdate = false;
-            AddBlockRange(BlockPrefab, new Vector3(-100, -1, -100), new Vector3(100, 0, 100), Cube.TYPE.Grass);
-            AddBlockRange(BlockPrefab, new Vector3(0, 1, 0), new Vector3(100, 15, 100), Cube.TYPE.Grass);
-            AddBlockRange(BlockPrefab, new Vector3(-1, 1, 0), new Vector3(-1, 8, 3), Cube.TYPE.Grass);
+            AddBlockRange(BlockPrefab, new Vector3(-100, -5, -100), new Vector3(100, -1, 100), Cube.TYPE.Grass);
             //AddBlockRange(BlockPrefab, new Vector3(10, 9, 10), new Vector3(40, 30, 40));
 
 
@@ -174,7 +172,7 @@ public class BlockManager : MonoBehaviour {
         }
         if (MargeTarget == null)
         {
-            OctreeCube.AddValue(new OctreeAble(cube), cube.GetStartVector3(), cube.GetEndVector3());
+            OctreeCube.AddValue(new TreeAble(cube), cube.GetStartVector3(), cube.GetEndVector3());
             GetComponent<QuadManager>().AddQuadAllDir(cube);
         }
         else
@@ -182,7 +180,7 @@ public class BlockManager : MonoBehaviour {
             MargeTarget.ExpandCubeForMarge(cube);
             DestroyImmediate(tmp.gameObject);
             //print("b : " + MargeTarget.myTree.name);
-            MargeTarget.myTree.updateValue(new OctreeAble(MargeTarget));
+            MargeTarget.myTree.updateValue(new TreeAble(MargeTarget));
             loopMarge(MargeTarget);
             //print("a : " + MargeTarget.myTree.name);
             //update MargeTarget
@@ -239,7 +237,7 @@ public class BlockManager : MonoBehaviour {
     public bool deleteBlock(Vector3 s, Vector3 e, Cube target)
     {
         List<CubeRangeData> splitList = target.getSplitCubeListbyRange(s, e);
-        target.myTree.PopValueAllParent(new OctreeAble(target));
+        target.myTree.PopValueAllParent(new TreeAble(target));
         DestroyImmediate(target.gameObject);
         //print("splitList.Count : " + splitList.Count);
         int count = 0;
@@ -269,7 +267,7 @@ public class BlockManager : MonoBehaviour {
         {
             //print("Main (" + list[0].GetStartVector3() + ">>" + list[0].GetEndVector3() + ")");
             List<CubeRangeData> splitList = list[0].getSplitCubeListbyRange(s, e);
-            OctreeCube.PopValueAllParent(new OctreeAble(list[0]));
+            OctreeCube.PopValueAllParent(new TreeAble(list[0]));
             DestroyImmediate(list[0].gameObject);
 
             foreach (CubeRangeData data in splitList)
@@ -321,9 +319,9 @@ public class BlockManager : MonoBehaviour {
             if (MargeTarget != null)
             {
                 MargeTarget.ExpandCubeForMarge(cube);
-                cube.myTree.PopValueAllParent(new OctreeAble(cube));
+                cube.myTree.PopValueAllParent(new TreeAble(cube));
                 DestroyImmediate(cube.gameObject);
-                MargeTarget.myTree.updateValue(new OctreeAble(MargeTarget));
+                MargeTarget.myTree.updateValue(new TreeAble(MargeTarget));
                 cube = MargeTarget;
                 MargeTarget = null;
             }

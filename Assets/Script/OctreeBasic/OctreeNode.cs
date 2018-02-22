@@ -18,7 +18,7 @@ public class OctreeNode : OctreeBasic
         return new OctreeNode(Parent as OctreeNode, S, E, root as OctreeNode, name);
     }
 
-    public override bool AddValue(OctreeAble T, Vector3 s, Vector3 e)
+    public override bool AddValue(TreeAble T, Vector3 s, Vector3 e)
     {
         Cube t = T.obj as Cube;
         if (t == null) return false;
@@ -36,7 +36,7 @@ public class OctreeNode : OctreeBasic
         {
             if (childNodes[0] == null) createChildNodes();
             if (list.Count > 0 && tyrChildNodeCanAddValue(list[0], firstS, firstE) == true)
-                list = new List<OctreeAble>();
+                list = new List<TreeAble>();
             if (tyrChildNodeCanAddValue(T, s, e) == false)
             {
                 //MonoBehaviour.print("list.count " + list.Count + "  count : " + count + "   level : " + level + "(" + start + " >> " + end + ")");
@@ -61,7 +61,7 @@ public class OctreeNode : OctreeBasic
         //MonoBehaviour.print("count " + count);
     }
 
-    public override void updateValue(OctreeAble T)
+    public override void updateValue(TreeAble T)
     {
         Cube t = T.obj as Cube;
         Vector3 s = t.GetStartVector3();
@@ -86,7 +86,7 @@ public class OctreeNode : OctreeBasic
     {
         List<Cube> result = new List<Cube>();
         //find My List
-        foreach (OctreeAble c in list)
+        foreach (TreeAble c in list)
         {
             if ((c.obj as Cube).CheckThisCubeCollideRange(s, e))
                 result.Add((c.obj as Cube));
@@ -103,7 +103,7 @@ public class OctreeNode : OctreeBasic
         return result;
     }
 
-    public override bool checkChildNodeCanAddValue(OctreeAble T, Vector3 s, Vector3 e)
+    public override bool checkChildNodeCanAddValue(TreeAble T, Vector3 s, Vector3 e)
     {
         for (int i = 0; i < childNodes.Length; i++)
         {
@@ -115,7 +115,7 @@ public class OctreeNode : OctreeBasic
         }
         return false;
     }
-    public override bool tyrChildNodeCanAddValue(OctreeAble T, Vector3 s, Vector3 e)
+    public override bool tyrChildNodeCanAddValue(TreeAble T, Vector3 s, Vector3 e)
     {
         for (int i = 0; i < childNodes.Length; i++)
         {
