@@ -9,6 +9,7 @@ public class MeshQuad
     public Vector3 center;
     public Vector3 size;
     public int triIndex;
+    public QuadManager.DIRECTION dir;
     public WorldMeshCube parentMesh;
     public Cube.TYPE type;
 
@@ -82,13 +83,14 @@ public class MeshQuad
         }
     }
 
-    public MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, Cube.TYPE type,WorldMeshCube parent)
+    public MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, Cube.TYPE type,QuadManager.DIRECTION dir,WorldMeshCube parent)
     {
         this.normal = normal;
         this.uvSize = uvSize;
         this.center = center;
         this.size = size;
         this.type = type;
+        this.dir = dir;
         this.parentMesh = parent;
 
         this.triIndex = -1;
@@ -203,58 +205,52 @@ public class MeshQuad
     }
 
 
-    public static List<MeshQuad> getQuadList(Vector3 center,Vector3 size, List<QuadManager.DIRECTION> dirList, WorldMeshCube p)
+    public static List<MeshQuad> getQuadList(Vector3 center,Vector3 size, List<QuadManager.DIRECTION> dirList, WorldMeshCube p,float reverse = 1f)
     {
         List<MeshQuad> result = new List<MeshQuad>();
 
         int index = 0;
-        if (dirList[index] == QuadManager.DIRECTION.front)
+        if (index < dirList.Count && dirList[index] == QuadManager.DIRECTION.front)
         {
-            index++;
-            result.Add(new MeshQuad(Vector3.back,       
+           result.Add(new MeshQuad(Vector3.back * reverse,       
                 new Vector2(size.x, size.y),
                 center + new Vector3(0, 0, -size.z) * 0.5f,
-                new Vector3(size.x, size.y, 0), p.type, p));
+                new Vector3(size.x, size.y, 0), p.type, dirList[index++], p));
         }
-        if (dirList[index] == QuadManager.DIRECTION.back)
+        if (index < dirList.Count && dirList[index] == QuadManager.DIRECTION.back)
         {
-            index++;
-            result.Add(new MeshQuad(Vector3.forward,    
+            result.Add(new MeshQuad(Vector3.forward * reverse,    
                 new Vector2(size.x, size.y),
                 center + new Vector3(0, 0, +size.z) * 0.5f,
-                new Vector3(size.x, size.y, 0), p.type, p));
+                new Vector3(size.x, size.y, 0), p.type, dirList[index++], p));
         }
-        if (dirList[index] == QuadManager.DIRECTION.right)
+        if (index < dirList.Count && dirList[index] == QuadManager.DIRECTION.right)
         {
-            index++;
-            result.Add(new MeshQuad(Vector3.right,      
+            result.Add(new MeshQuad(Vector3.right * reverse,      
                 new Vector2(size.z, size.y),
                 center + new Vector3(size.x, 0, 0) * 0.5f,
-                new Vector3(0, size.y, size.z), p.type, p));
+                new Vector3(0, size.y, size.z), p.type, dirList[index++], p));
         }
-        if (dirList[index] == QuadManager.DIRECTION.left)
+        if (index < dirList.Count && dirList[index] == QuadManager.DIRECTION.left)
         {
-            index++;
-            result.Add(new MeshQuad(Vector3.left,       
+            result.Add(new MeshQuad(Vector3.left * reverse,       
                 new Vector2(size.z, size.y),
                 center + new Vector3(-size.x, 0, 0) * 0.5f,
-                new Vector3(0, size.y, size.z), p.type, p));
+                new Vector3(0, size.y, size.z), p.type, dirList[index++], p));
         }
-        if (dirList[index] == QuadManager.DIRECTION.top)
+        if (index < dirList.Count && dirList[index] == QuadManager.DIRECTION.top)
         {
-            index++;
-            result.Add(new MeshQuad(Vector3.up,         
+            result.Add(new MeshQuad(Vector3.up * reverse,         
                 new Vector2(size.x, size.z),
                 center + new Vector3(0, size.y, 0) * 0.5f,
-                new Vector3(size.x, 0, size.z), p.type, p));
+                new Vector3(size.x, 0, size.z), p.type, dirList[index++], p));
         }
-        if (dirList[index] == QuadManager.DIRECTION.bottom)
+        if (index < dirList.Count && dirList[index] == QuadManager.DIRECTION.bottom)
         {
-            index++;
-            result.Add(new MeshQuad(Vector3.down,       
+            result.Add(new MeshQuad(Vector3.down * reverse,       
                 new Vector2(size.x, size.z),
                 center + new Vector3(0,-size.y, 0) * 0.5f, 
-                new Vector3(size.x, 0, size.z), p.type, p));
+                new Vector3(size.x, 0, size.z), p.type, dirList[index++], p));
         }
         //MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, WorldMeshCube parent)
         return result;

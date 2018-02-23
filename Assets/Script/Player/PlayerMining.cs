@@ -53,7 +53,7 @@ public class PlayerMining : MonoBehaviour {
 
             DropItem.DropItemPosCube(c.type, 1, hitInfo.point, DropItem.RandomUpperVel());            
 
-            if (blockmanager.deleteBlock(tmpVector- Vector3.one / 2f, tmpVector+ Vector3.one / 2f, c) == false)
+            if (blockmanager.deleteBlock(tmpVector,Vector3.one) == false)
             {
                 print("hitInfo.transform.name : " + hitInfo.transform.name);
             }

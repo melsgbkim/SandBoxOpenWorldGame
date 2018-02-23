@@ -8,9 +8,11 @@ public class WorldMeshCubeManager : MonoBehaviour {
     Vector3 pos = Vector3.zero;
 
     public WorldMeshCube prefab;
+    static WorldMeshCubeManager _manager = null;
+    public static WorldMeshCubeManager Get{get{return _manager;}}
     // Use this for initialization
     void Start () {
-        
+        if (_manager == null) _manager =this;
 
     }
 	
@@ -40,7 +42,7 @@ public class WorldMeshCubeManager : MonoBehaviour {
         (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center);
     }
 
-    void NewMeshCube(Vector3 center, Cube.TYPE type,Vector3 size)
+    public void NewMeshCube(Vector3 center, Cube.TYPE type,Vector3 size)
     {
         if (MeshCubeManagerTable.ContainsKey(type) == false)
             NewMeshCubeToHashTable(type);
@@ -59,5 +61,26 @@ public class WorldMeshCubeManager : MonoBehaviour {
             case Cube.TYPE.Dirt: c.TexturePath = "Texture/CubeDirt"; break;
             case Cube.TYPE.Air: c.TexturePath = "Texture/CubeNone"; break;
         }
+    }
+
+    public void DeleteMeshRange(Vector3 center, Cube.TYPE type, Vector3 size)
+    {
+        (MeshCubeManagerTable[type] as WorldMeshCube).AddReverseBlock(center, size);
+    }
+
+
+    public void NewMeshByDeleteCube(Vector3 center, Cube.TYPE type, Vector3 size,Vector3 dir)
+    {
+        if (MeshCubeManagerTable.ContainsKey(type) == false)
+            NewMeshCubeToHashTable(type);
+
+        List<QuadManager.DIRECTION> dirlist = new List<QuadManager.DIRECTION>();
+        if (dir == Vector3.forward) dirlist.Add(QuadManager.DIRECTION.back);
+        if (dir == Vector3.back) dirlist.Add(QuadManager.DIRECTION.front);
+        if (dir == Vector3.left) dirlist.Add(QuadManager.DIRECTION.left);
+        if (dir == Vector3.right) dirlist.Add(QuadManager.DIRECTION.right);
+        if (dir == Vector3.up) dirlist.Add(QuadManager.DIRECTION.top);
+        if (dir == Vector3.down) dirlist.Add(QuadManager.DIRECTION.bottom);
+        (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center, size,dirlist,-1f); 
     }
 }

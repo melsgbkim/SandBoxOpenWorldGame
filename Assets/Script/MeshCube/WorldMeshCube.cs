@@ -76,7 +76,26 @@ public class WorldMeshCube : MonoBehaviour {
 
     public void addBlock(Vector3 center, Vector3 size)
     {
-        List<MeshQuad> listQuad = MeshQuad.getQuadList(center, size,QuadManager.DirList,this);
+        List<MeshQuad> listQuad = MeshQuad.getQuadList(center, size, QuadManager.DirList, this);
+        for (int i = 0; i < listQuad.Count; i++)
+            AddQuad(listQuad[i]);
+    }
+
+    public void addBlock(Vector3 center, Vector3 size,List<QuadManager.DIRECTION> dirlist,float reverse = 1f)
+    {
+        List<MeshQuad> listQuad = MeshQuad.getQuadList(center, size, dirlist, this,reverse);
+        for (int i = 0; i < listQuad.Count; i++)
+            AddQuad(listQuad[i]);
+    }
+
+    public void AddReverseBlock(Vector3 center)
+    {
+        AddReverseBlock(center, Vector3.one);
+    }
+
+    public void AddReverseBlock(Vector3 center, Vector3 size)
+    {
+        List<MeshQuad> listQuad = MeshQuad.getQuadList(center, size, QuadManager.DirList, this,-1f);
         for (int i = 0; i < listQuad.Count; i++)
             AddQuad(listQuad[i]);
     }
@@ -97,20 +116,6 @@ public class WorldMeshCube : MonoBehaviour {
         List<MeshQuad> list = quadtreeMeshNode.FindRangeList(quad.V2Start49, quad.V2End49);
         if (list.Count <= 0)
         {
-            //List<MeshCube> listAround = octreeMeshNode.FindRangeList(s - Vector3.one, e + Vector3.one);
-
-            //List<int> triangleList = new List<int>();
-            /*if (listAround.Count > 0)
-            {
-                for (int i = 0; i < listAround.Count; i++)
-                {
-                    QuadManager.DIRECTION dir = c.tryDeleteMeshNearMeshCube(listAround[i]);
-                    if (dir != QuadManager.DIRECTION.max)
-                        triangleList.Add(listAround[i].triIndexArr[(int)dir]);
-                }
-            }
-            if (triangleList.Count > 0)
-                deleteTriangleList(triangleList);*/
             if (loopMarge(quad, quadtreeMeshNode) == true)
                 return;
             quadtreeMeshNode.AddValue(new TreeAble(quad), quad.V2Start, quad.V2End);
@@ -152,7 +157,7 @@ public class WorldMeshCube : MonoBehaviour {
             if (data.deleteRange == false)
             {
                 //print("Child(" + data.StartBlockRange + ">>" + data.EndBlockRange + ")(" + data.start + ">>" + data.end + ")");
-                AddQuad(new MeshQuad(target.normal, data.uv, data.center, data.size, target.type, this));
+                AddQuad(new MeshQuad(target.normal, data.uv, data.center, data.size, target.type, target.dir,this));
                 count += 1;
             }
         }

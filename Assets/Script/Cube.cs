@@ -144,7 +144,7 @@ public class Cube : MonoBehaviour {
 
         transform.localPosition = Center / 3f;
         transform.localScale = Size / 3f;
-        setQuadSize();
+        //setQuadSize();
         if (initialized == false)initialized = true;
         //print("localPosition " + transform.localPosition + "  localScale " + transform.localScale);
     }
@@ -288,7 +288,7 @@ public class CubeRangeData
 {
     Cube parent = null;
     public bool deleteRange = false;
-    public CubeRangeData(Cube p, Vector3 s,Vector3 e,bool delete)
+    public CubeRangeData(Cube p, Vector3 s, Vector3 e, bool delete)
     {
         parent = p;
         start = s;
@@ -312,5 +312,16 @@ public class CubeRangeData
     public Vector3 EndBlockRange
     {
         get { return end - Vector3.one / 2f; }
+    }
+
+    public bool Vec3InThisRange(Vector3 v)
+    {
+        return
+            start.x <= v.x &&
+            start.y <= v.y &&
+            start.z <= v.z &&
+            end.x >= v.x &&
+            end.y >= v.y &&
+            end.z >= v.z;
     }
 }

@@ -112,7 +112,7 @@ public class ItemCube : ItemStackable
     public override bool ItemAction(float count)
     {
         
-        bool result = BlockManager.manager.AddBlock(new Vector3(Mathf.Round(BulidPosition.x * 3), Mathf.Round(BulidPosition.y * 3), Mathf.Round(BulidPosition.z * 3)), Vector3.one, type);
+        bool result = BlockManager.manager.AddBlock(new Vector3(Mathf.Round(BulidPosition.x * 3), Mathf.Round(BulidPosition.y * 3), Mathf.Round(BulidPosition.z * 3)), Vector3.one, type, true);
         if (result == false)
         {
             MonoBehaviour.print(BulidPosition + " >> " + type + " >> cound : " + count);
