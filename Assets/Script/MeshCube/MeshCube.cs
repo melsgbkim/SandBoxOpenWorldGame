@@ -161,6 +161,8 @@ public class MeshQuad
     {
         if (q.normal != this.normal)
             return false;
+        if (q.type != this.type)
+            return false;
         Vector2 c = q.V2Center;
         Vector2 s = q.V2size * 0.5f;
 

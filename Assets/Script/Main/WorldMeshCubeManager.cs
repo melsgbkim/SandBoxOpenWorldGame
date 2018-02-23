@@ -26,7 +26,6 @@ public class WorldMeshCubeManager : MonoBehaviour {
         {
             for (int i = 0; i < max; i++)
             {
-
                 NewMeshCube(pos,targetType);
                 pos += Vector3.forward;
             }
