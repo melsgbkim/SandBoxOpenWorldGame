@@ -235,31 +235,50 @@ public class BlockManager : MonoBehaviour {
         {
             //print("list.Count " + list.Count);
             List<Vector3> dirList = DirListDefault;
+            List<Vector3> dirListResult = null;
             Cube.TYPE targetType = target.type;
-            deleteBlock(s, e, target, dirList);
+            deleteBlock(s, e, target, out dirListResult,dirList);
 
             List<Cube> list = OctreeCube.FindRangeList(s + Vector3.one * 0.01f - Vector3.one, e - Vector3.one * 0.01f + Vector3.one);
             List<Vector3> CheckList = DirListDefault;
             for (int i = 0; i < CheckList.Count; i++)
             {
-                bool InList = false;
-                for (int j = 0; j < dirList.Count; j++)
+                /*bool isNeedToDeleteMesh = true;
+                for (int k = 0; k < list.Count; k++)
                 {
-                    if (CheckList[i] == dirList[j])
+                    Vector3 c = CheckList[i] + center;
+                    if (list[k].CheckThisCubeCollideRange(c,c))
+                    {//create mesh
+                        WorldMeshCubeManager.Get.NewMeshByDeleteCube(center,list[k].type,size,CheckList[i]);
+                        isNeedToDeleteMesh = false;
+                        break;
+                    }
+                }
+                if(isNeedToDeleteMesh)
+                {//create mesh this type;
+                    WorldMeshCubeManager.Get.DeleteMeshDirFromCenter(center, targetType, size, CheckList[i]);
+                }*/
+                bool InList = false;
+                for (int j = 0; j < dirListResult.Count; j++)
+                {
+                    if (CheckList[i] == dirListResult[j])
                         InList = true;
                 }
                 if(InList == false)
                 {//checkCube
+                    bool created = false;
                     for (int k = 0; k < list.Count; k++)
                     {
                         Vector3 c = CheckList[i] + center;
                         if (list[k].CheckThisCubeCollideRange(c,c))
                         {//create mesh
                             WorldMeshCubeManager.Get.NewMeshByDeleteCube(center,list[k].type,size,CheckList[i]);
-                            list.RemoveAt(k);
+                            created = true;
                             break;
                         }
                     }
+                    if(created == false)
+                        WorldMeshCubeManager.Get.DeleteMeshDirFromCenter(center, targetType, size, CheckList[i]);
                 }
                 else
                 {//create mesh this type;
@@ -274,17 +293,16 @@ public class BlockManager : MonoBehaviour {
             return false;
         }
     }
-    public bool deleteBlock(Vector3 s, Vector3 e, Cube target,List<Vector3> dirList = null)
+    public bool deleteBlock(Vector3 s, Vector3 e, Cube target, out List<Vector3> dirListResult,List<Vector3> dirList = null)
     {
         Vector3 c = (s + e) * 0.5f;
-        List<Vector3> tmp = dirList;
-        dirList = new List<Vector3>();
+        dirListResult = new List<Vector3>();
         List<CubeRangeData> splitList = target.getSplitCubeListbyRange(s, e);
         target.myTree.PopValueAllParent(new TreeAble(target));
         //WorldMeshCubeManager.Get.DeleteMeshRange(target.Center, target.type, target.Size);
         Destroy(target.gameObject);
-        if (tmp == null)
-            tmp = new List<Vector3>();
+        if (dirList == null)
+            dirList = new List<Vector3>();
         //print("splitList.Count : " + splitList.Count);
         int count = 0;
         foreach (CubeRangeData data in splitList)
@@ -293,10 +311,10 @@ public class BlockManager : MonoBehaviour {
             {
                 //print("Child(" + data.StartBlockRange + ">>" + data.EndBlockRange + ")(" + data.start + ">>" + data.end + ")");
                 AddBlock(BlockPrefab, data.center, data.size, target.type, false);
-                for(int i=0;i<dirList.Count;i++)
+                for(int i=0;i< dirList.Count;i++)
                 {
-                    if (data.Vec3InThisRange(c + tmp[i]))
-                        dirList.Add(tmp[i]);
+                    if (data.Vec3InThisRange(c + dirList[i]))
+                        dirListResult.Add(dirList[i]);
                 }
                 
                 count += 1;

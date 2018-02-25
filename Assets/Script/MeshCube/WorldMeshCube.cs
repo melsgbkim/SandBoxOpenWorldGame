@@ -100,6 +100,13 @@ public class WorldMeshCube : MonoBehaviour {
             AddQuad(listQuad[i]);
     }
 
+    public void DeleteMeshDirFromCenter(Vector3 center, Vector3 size, List<QuadManager.DIRECTION> dirlist, float reverse = 1f)
+    {
+        List<MeshQuad> listQuadForDelete = MeshQuad.getQuadList(center, size, dirlist, this, reverse);
+        for (int i = 0; i < listQuadForDelete.Count; i++)
+            DeleteQuad(listQuadForDelete[i]);
+    }
+
     QuadTreeMeshNode GetTree(MeshQuad quad)
     {
         if (quad.normal.x == 0 && quad.normal.y == 0) return TreeIndexArr[0].GetTree(quad);//front back
@@ -111,7 +118,7 @@ public class WorldMeshCube : MonoBehaviour {
     void AddQuad(MeshQuad quad)
     {
         QuadTreeMeshNode quadtreeMeshNode = quad.tree;
-        if(quadtreeMeshNode == null)
+        if (quadtreeMeshNode == null)
             quadtreeMeshNode = GetTree(quad);
         List<MeshQuad> list = quadtreeMeshNode.FindRangeList(quad.V2Start49, quad.V2End49);
         if (list.Count <= 0)
@@ -121,18 +128,18 @@ public class WorldMeshCube : MonoBehaviour {
             quadtreeMeshNode.AddValue(new TreeAble(quad), quad.V2Start, quad.V2End);
             expend(quad);
         }
-        else if(list.Count > 0)
+        else if (list.Count > 0)
         {
             Hashtable deleteTable = new Hashtable();
             List<int> deleteList = new List<int>();
-            for(int i=0;i< list.Count;i++)
+            for (int i = 0; i < list.Count; i++)
             {
                 if (quad.normal == -list[i].normal)
                 {
                     deleteQuad(quad.V2Start, quad.V2End, list[i]);
                     if (deleteTable.ContainsKey(list[i].parentMesh) == false)
                         deleteTable.Add(list[i].parentMesh, new List<int>());
-                    (deleteTable[list[i].parentMesh]as List<int>).Add(list[i].triIndex);
+                    (deleteTable[list[i].parentMesh] as List<int>).Add(list[i].triIndex);
                 }
             }
             if (deleteTable.Count > 0)
@@ -144,10 +151,36 @@ public class WorldMeshCube : MonoBehaviour {
             }
         }
     }
-
-    public bool deleteQuad(Vector3 s, Vector3 e, MeshQuad target)
+    void DeleteQuad(MeshQuad quad)
     {
-        List<QuadRangeData> splitList = target.getSplitCubeListbyRange(s, e);
+        QuadTreeMeshNode quadtreeMeshNode = quad.tree;
+        if (quadtreeMeshNode == null)
+            quadtreeMeshNode = GetTree(quad);
+        List<MeshQuad> list = quadtreeMeshNode.FindRangeList(quad.V2Start49, quad.V2End49);
+        if (list.Count > 0)
+        {
+            Hashtable deleteTable = new Hashtable();
+            List<int> deleteList = new List<int>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                deleteQuad(quad.V2Start, quad.V2End, list[i]);
+                if (deleteTable.ContainsKey(list[i].parentMesh) == false)
+                    deleteTable.Add(list[i].parentMesh, new List<int>());
+                (deleteTable[list[i].parentMesh] as List<int>).Add(list[i].triIndex);
+            }
+            if (deleteTable.Count > 0)
+            {
+                foreach (WorldMeshCube q in deleteTable.Keys)
+                {
+                    q.deleteTriangleList(deleteTable[q] as List<int>);
+                }
+            }
+        }
+    }
+
+    public bool deleteQuad(Vector2 s, Vector2 e, MeshQuad target)
+    {
+        List<QuadRangeData> splitList = target.getSplitCubeListbyRange(s,e);
         target.tree.PopValueAllParent(new TreeAble(target));
         //DestroyImmediate(target.gameObject);
         //print("splitList.Count : " + splitList.Count);

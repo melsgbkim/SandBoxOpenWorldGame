@@ -49,6 +49,14 @@ public class MeshQuad
         return Vector3.zero;
     }
 
+    public Vector2 V3toV2(Vector3 v)
+    {
+        if (normal.x == 0 && normal.y == 0) { return new Vector2(v.x, v.y); }
+        if (normal.x == 0 && normal.z == 0) { return new Vector2(v.x, v.z); }
+        if (normal.z == 0 && normal.y == 0) { return new Vector2(v.z, v.y); }
+        return Vector2.zero;
+    }
+
     public Vector2 V2Center
     {
         get
@@ -81,6 +89,18 @@ public class MeshQuad
             if (normal.x == 0 && normal.z == 0) { size.x = value.x; size.z = value.y; }
             if (normal.z == 0 && normal.y == 0) { size.z = value.x; size.y = value.y; }
         }
+    }
+    public override bool Equals(object obj)
+    {
+        if (obj == null) return false;
+        MeshQuad c = obj as MeshQuad;
+        if (c == null) return false;
+        else return Equals(c);
+    }
+    public bool Equals(MeshQuad other)
+    {
+        if (other == null) return false;
+        return (this.center == other.center && this.size == other.size);
     }
 
     public MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, Cube.TYPE type,QuadManager.DIRECTION dir,WorldMeshCube parent)
@@ -159,7 +179,7 @@ public class MeshQuad
         return !((E.x < s.x) || (e.x < S.x) || (E.y < s.y) || (e.y < S.y));
     }
 
-    public bool CheckCanMarge(MeshQuad q)
+    /*public bool CheckCanMarge(MeshQuad q)
     {
         if (q.normal != this.normal)
             return false;
@@ -174,6 +194,19 @@ public class MeshQuad
             (c + new Vector2(0, s.y) == C - new Vector2(0, S.y) || (c - new Vector2(0, s.y) == C + new Vector2(0, S.y)) && s.x == S.x) ||
             (c + new Vector2(s.x, 0) == C - new Vector2(S.x, 0) || (c - new Vector2(s.x, 0) == C + new Vector2(S.x, 0)) && s.y == S.y)
             );
+    }*/
+    public bool CheckCanMarge(MeshQuad other)
+    {
+        if (other.type != this.type) return false;
+        if (other.normal != this.normal) return false;
+
+        bool SameX = Mathf.Abs(V2Center.x - other.V2Center.x) < 0.01f && Mathf.Abs(V2size.x - other.V2size.x) < 0.01f;
+        bool SameY = Mathf.Abs(V2Center.y - other.V2Center.y) < 0.01f && Mathf.Abs(V2size.y - other.V2size.y) < 0.01f;
+        if (SameX && !SameY) return (Mathf.Abs(V2End.y - other.V2Start.y)<0.01f || Mathf.Abs(V2Start.y - other.V2End.y)<0.01f);
+        if (!SameX && SameY) return (Mathf.Abs(V2End.x - other.V2Start.x)<0.01f || Mathf.Abs(V2Start.x - other.V2End.x)<0.01f);
+        if (SameX && SameY) MonoBehaviour.print("Error : CheckCanMarge AllTrue");
+        //All True = bug
+        return false;
     }
 
     public void ExpandQuadForMarge(MeshQuad other)
@@ -255,7 +288,10 @@ public class MeshQuad
         //MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, WorldMeshCube parent)
         return result;
     }
-
+    public List<QuadRangeData> getSplitCubeListbyRange(Vector3 s, Vector3 e)
+    {
+        return getSplitCubeListbyRange(V3toV2(s), V3toV2(e));
+    }
     public List<QuadRangeData> getSplitCubeListbyRange(Vector2 s, Vector2 e)
     {
         List<QuadRangeData> result = new List<QuadRangeData>();

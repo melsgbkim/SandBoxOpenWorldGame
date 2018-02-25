@@ -68,19 +68,45 @@ public class WorldMeshCubeManager : MonoBehaviour {
         (MeshCubeManagerTable[type] as WorldMeshCube).AddReverseBlock(center, size);
     }
 
+    public void DeleteMeshDirFromCenter(Vector3 center, Cube.TYPE type, Vector3 size, Vector3 dir)
+    {
+        List<QuadManager.DIRECTION> dirlist = GetDIRList(dir);
+        (MeshCubeManagerTable[type] as WorldMeshCube).DeleteMeshDirFromCenter(center, size, dirlist);
+    }
+
 
     public void NewMeshByDeleteCube(Vector3 center, Cube.TYPE type, Vector3 size,Vector3 dir)
     {
         if (MeshCubeManagerTable.ContainsKey(type) == false)
             NewMeshCubeToHashTable(type);
 
-        List<QuadManager.DIRECTION> dirlist = new List<QuadManager.DIRECTION>();
-        if (dir == Vector3.forward) dirlist.Add(QuadManager.DIRECTION.back);
-        if (dir == Vector3.back) dirlist.Add(QuadManager.DIRECTION.front);
-        if (dir == Vector3.left) dirlist.Add(QuadManager.DIRECTION.left);
-        if (dir == Vector3.right) dirlist.Add(QuadManager.DIRECTION.right);
-        if (dir == Vector3.up) dirlist.Add(QuadManager.DIRECTION.top);
-        if (dir == Vector3.down) dirlist.Add(QuadManager.DIRECTION.bottom);
+        List<QuadManager.DIRECTION> dirlist = GetDIRList(dir);
         (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center, size,dirlist,-1f); 
+    }
+
+    public List<QuadManager.DIRECTION> GetDIRList(Vector3 v)
+    {
+        List<QuadManager.DIRECTION> dirlist = new List<QuadManager.DIRECTION>();
+        if (v == Vector3.forward) dirlist.Add(QuadManager.DIRECTION.back);
+        if (v == Vector3.back) dirlist.Add(QuadManager.DIRECTION.front);
+        if (v == Vector3.left) dirlist.Add(QuadManager.DIRECTION.left);
+        if (v == Vector3.right) dirlist.Add(QuadManager.DIRECTION.right);
+        if (v == Vector3.up) dirlist.Add(QuadManager.DIRECTION.top);
+        if (v == Vector3.down) dirlist.Add(QuadManager.DIRECTION.bottom);
+        return dirlist;
+    }
+    public List<QuadManager.DIRECTION> GetDIRList(Vector3[] vArr)
+    {
+        List<QuadManager.DIRECTION> dirlist = new List<QuadManager.DIRECTION>();
+        for(int i=0;i< vArr.Length;i++)
+        {
+            if (vArr[i] == Vector3.forward) dirlist.Add(QuadManager.DIRECTION.back);
+            if (vArr[i] == Vector3.back) dirlist.Add(QuadManager.DIRECTION.front);
+            if (vArr[i] == Vector3.left) dirlist.Add(QuadManager.DIRECTION.left);
+            if (vArr[i] == Vector3.right) dirlist.Add(QuadManager.DIRECTION.right);
+            if (vArr[i] == Vector3.up) dirlist.Add(QuadManager.DIRECTION.top);
+            if (vArr[i] == Vector3.down) dirlist.Add(QuadManager.DIRECTION.bottom);
+        }
+        return dirlist;
     }
 }

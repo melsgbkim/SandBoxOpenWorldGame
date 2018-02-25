@@ -8,11 +8,12 @@ public class SkillMiningFront : Skill
 	public SkillMiningFront()
 	{
 		init("SkillIcon/skill_mining_front");
-		coolTime.time = 1 / 60f * 1f;
-		needPoint = 1f;
-		HavePoint = CheckSp;
+        //coolTime.time = 1 / 60f * 1f;
+        //needPoint = 1f;
+        coolTime.time = 0f;
+        needPoint = 0f;
+        HavePoint = CheckSp;
 		UsePoint = UseSp;
-
 	}
 
 	public override void Activate()
@@ -20,8 +21,8 @@ public class SkillMiningFront : Skill
 		PlayerMining mining = Player.GetComponent<PlayerMining>();
 		if (mining)
 		{
-			mining.Mining(0, new Vector3(0.5f, 0.9f, 0.05f), new Vector3(0, 0, 0) / 3f);
-		}
+            mining.Mining(0, new Vector3(0.5f, 0.9f, 0.05f), new Vector3(0, 0, 0) / 3f);
+        }
 	}
 }
 
