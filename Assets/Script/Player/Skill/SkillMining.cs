@@ -31,9 +31,11 @@ public class SkillMiningUp : Skill
 	public SkillMiningUp()
 	{
 		init("SkillIcon/skill_mining_Up");
-		coolTime.time = 1 / 60f * 3f;
-		needPoint = 3f;
-		HavePoint = CheckSp;
+        //coolTime.time = 1 / 60f * 3f;
+        //needPoint = 3f;
+        coolTime.time = 0f;
+        needPoint = 0f;
+        HavePoint = CheckSp;
 		UsePoint = UseSp;
 	}
 	public override void Activate()
@@ -51,9 +53,11 @@ public class SkillMiningDown : Skill
 	public SkillMiningDown()
 	{
 		init("SkillIcon/skill_mining_Down");
-		coolTime.time = 1 / 60f * 3f;
-		needPoint = 3f;
-		HavePoint = CheckSp;
+        //coolTime.time = 1 / 60f * 3f;
+        //needPoint = 3f;
+        coolTime.time = 0f;
+        needPoint = 0f;
+        HavePoint = CheckSp;
 		UsePoint = UseSp;
 	}
 	public override void Activate()
