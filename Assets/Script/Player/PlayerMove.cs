@@ -17,14 +17,18 @@ public class PlayerMove : MonoBehaviour {
     public Vector3 HeightStairs = new Vector3(0, 1.1f, 0) / 3f;
     public Vector3 HeightDistanceToPoint = new Vector3(0, 1f, 0) - new Vector3(0, 1, 0) * 0.5f;
 
+    public UnityChanAnimationControlScript animationControl;
+
     // Use this for initialization
     void Start () {
         moveForword = new Vector3(0, 0, 0);
+        animationControl = GetComponentInChildren<UnityChanAnimationControlScript>();
     }
 
     // Update is called once per frame
     void Update() {
         moveForword = GetComponent<PlayerInput>().Forword;
+        
     }
 
     public Vector3 GetOtherVector3Dir()
@@ -61,6 +65,10 @@ public class PlayerMove : MonoBehaviour {
         int div = 5;
         for(int i=0;i< div; i++)
             moveDir(dir, move / div * Time.deltaTime);
+        if(dir == Vector3.zero)
+            animationControl.setRun(0.01f);
+        else
+            animationControl.setRun(move);
 
         GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
@@ -72,6 +80,7 @@ public class PlayerMove : MonoBehaviour {
         else if (getKeyDownJump)
         {
             JumpVel = jumpPower;
+            animationControl.setJump();
             UpdateJump();
         }
         else
@@ -86,9 +95,10 @@ public class PlayerMove : MonoBehaviour {
 
         List<moveData> list = new List<moveData>();
 
-        if (dir == Vector3.zero)
+        
+        if (dir == Vector3.zero) 
             return;
-
+        transform.rotation = Quaternion.LookRotation(dir);
         RaycastHit hit;
         moveData tmp;
         if (tryMove(dir, distance, Vector3.zero, out tmp))
@@ -107,7 +117,7 @@ public class PlayerMove : MonoBehaviour {
         {
             //print(printData(list));
             transform.position = list[0].position;
-
+            //animationControl.setRun(distance*60f);
         }
     }
     string printData(List<moveData> list)

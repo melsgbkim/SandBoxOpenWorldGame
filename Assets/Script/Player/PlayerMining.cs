@@ -65,7 +65,7 @@ public class PlayerMining : MonoBehaviour {
         }
         else
         {
-            print("NO");
+            print("Mining{Physics.BoxCast() == false}");
 
         }
     }
