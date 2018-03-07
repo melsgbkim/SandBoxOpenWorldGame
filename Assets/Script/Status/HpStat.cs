@@ -24,7 +24,11 @@ public class HpStat : Stat
         };
     }
 
-
+    public void Init(float val)
+    {
+        SetMax(val);
+        Increase(val);
+    }
 
 }
 
