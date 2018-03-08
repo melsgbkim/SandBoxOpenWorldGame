@@ -88,8 +88,8 @@ public class ItemCube : ItemStackable
         {
             case Cube.TYPE.Grass: name = "grass"; grade = 1; break;
         }
-        iconPath = "ItemIcon/item_" + name;
-        previewPath = "prefab/DropItemPreview/" + name;
+        iconPath = PathManager.iconPath + "item_" + name;
+        previewPath = PathManager.previewPath + "CubeItem";
     }
 
     public override void ItemUse(float count)

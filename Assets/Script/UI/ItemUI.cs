@@ -8,6 +8,7 @@ public class ItemUI : MonoBehaviour {
     public RawImage itemGrade;
     public RawImage itemBack;
     public Text txt;
+    public ItemCubeIcon itemCubeIcon;
     public Item item = null;
     public ItemSlot slot;
     // Use this for initialization
@@ -43,17 +44,31 @@ public class ItemUI : MonoBehaviour {
             itemGrade.enabled = false;
             itemBack.enabled = false;
             txt.enabled = false;
+            itemCubeIcon.enabled = false;
             ItemSlot slot = GetComponent<ItemSlot>();
             slot.target = null;
         }
         else
         {
             i.ui = this;
-            itemIcon.enabled = true;
+            
             itemGrade.enabled = true;
             itemBack.enabled = true;
             txt.enabled = true;
-            itemIcon.texture = (Texture)Resources.Load("ItemIcon/item_" + item.name);
+
+            if(i as ItemCube == null)
+            {
+                itemIcon.enabled = true;
+                itemIcon.texture = (Texture)Resources.Load("ItemIcon/item_" + item.name);
+            }
+            else
+            {
+                itemCubeIcon.enabled = true;
+                itemCubeIcon.SetCubeType((i as ItemCube).type);
+            }
+            
+
+            
             itemGrade.texture = (Texture)Resources.Load("ItemIcon/item_grade_" + item.grade);
             UpdateStackCount();
             ItemSlot slot = GetComponent<ItemSlot>();

@@ -104,15 +104,29 @@ public class DropItem : MonoBehaviour {
     public void setItem(Item i)
     {        
         item = i;
-        setItemObj(i.previewPath);
+        GameObject obj = setItemObj(i.previewPath);
+        ItemCube itemCube = i as ItemCube;
+        if (itemCube != null)
+            setItemTexture(obj,PathManager.CubeTexturePath(itemCube.type));
     }
 
-    public void setItemObj(string path)
+    public GameObject setItemObj(string path)
     {
         GameObject obj = Instantiate((GameObject)Resources.Load(path), Vector3.zero, Quaternion.identity);
         obj.transform.SetParent(transform);
         obj.transform.localPosition = new Vector3(0,1/3f,0);
         obj.transform.localScale = Vector3.one / 3f / 1.5f;
+        return obj;
+    }
+    public void setItemTexture(GameObject obj, string path)
+    {
+        setItemTexture(obj,TextureManager.Load(path));
+    }
+    public void setItemTexture(GameObject obj,Texture txt)
+    {
+        if (txt == null) return;
+
+        obj.GetComponent<MeshRenderer>().material.mainTexture = txt;
     }
 
 
