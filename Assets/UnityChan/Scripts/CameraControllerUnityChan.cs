@@ -16,7 +16,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace CameraController
+namespace CameraControllerUnityChan
 {
 	enum MouseButtonDown
 	{
@@ -25,7 +25,7 @@ namespace CameraController
 		MBD_MIDDLE,
 	};
 
-	public class CameraController : MonoBehaviour
+	public class CameraControllerUnityChan : MonoBehaviour
 	{
 		[SerializeField]
 		private Vector3 focus = Vector3.zero;
