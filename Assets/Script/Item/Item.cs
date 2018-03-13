@@ -38,6 +38,15 @@ public class Item
     }
 }
 
+public class ItemEquipment : Item
+{
+    public ItemEquipment(string ItemCode)
+    {
+        iconPath = PathManager.iconPath + "item_tmp";
+        previewPath = PathManager.previewPath + "2DItem";
+    }
+}
+
 public class ItemStackable : Item
 {
     public virtual bool ItemAction(float count) { return false; }

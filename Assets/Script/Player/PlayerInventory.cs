@@ -70,6 +70,12 @@ public class PlayerInventory : MonoBehaviour {
             item.StackCount = 9998;
             AddItem(item);
         }
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            DropItem.DropItemPos(new ItemEquipment(""), new Vector3(-3 + Random.RandomRange(0f, 3f), 5, -3 + Random.RandomRange(0f, 3f)), Vector3.zero);
+        }
+
+            
 
         if (Input.GetKeyDown(InventoryOpenKey))
             inventoryUI.Toggle();

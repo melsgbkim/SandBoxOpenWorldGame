@@ -14,10 +14,14 @@ public class CameraControllerZoomAndRotate : MonoBehaviour {
     public KeyCode RotatePlus;
     public KeyCode RotateMinus;
 
+    public static Quaternion CameraRotate;
+
     // Use this for initialization
     void Start () {
 		
 	}
+
+
 	
 	// Update is called once per frame
 	void Update () {
@@ -27,6 +31,8 @@ public class CameraControllerZoomAndRotate : MonoBehaviour {
         if (cameraZoomObject.localPosition.z > ZoomMinMax.y) cameraZoomObject.localPosition = new Vector3(0, 0, ZoomMinMax.y);
 
         if (Input.GetKey(RotatePlus))   cameraRotateObject.Rotate(new Vector3(0, RotateSpeed, 0) * Time.deltaTime);
-        if (Input.GetKey(RotateMinus))  cameraRotateObject.Rotate(new Vector3(0, -RotateSpeed, 0) * Time.deltaTime);        
+        if (Input.GetKey(RotateMinus))  cameraRotateObject.Rotate(new Vector3(0, -RotateSpeed, 0) * Time.deltaTime);
+
+        CameraRotate = cameraRotateObject.rotation;
     }
 }

@@ -22,6 +22,8 @@ public class PlayerInput : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        Forword = CameraControllerZoomAndRotate.CameraRotate * Vector3.forward;
+
         bool CancleMoveBySkill = GetComponent<PlayerSkill>().SkillUpdate();
         if (CancleMoveBySkill == false)
             GetComponent<PlayerMove>().moveUpdate(

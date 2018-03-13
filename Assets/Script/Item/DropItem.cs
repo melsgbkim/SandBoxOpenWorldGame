@@ -7,15 +7,22 @@ public class DropItem : MonoBehaviour {
     public Item item = null;
     public PlayerInventory Player = null;
     public Transform terget = null;
+    public GameObject child = null;
+    public Vector3 scale = Vector3.one;
+
     public bool FollowMode = false;
     public float followTime = 1f/3f;
     public bool WillDeleted = false;
+    public bool rotate = false;
+    public bool floating = false;
+    public float floatingTime = 0f;
     // Use this for initialization
     void Start () {
     }
 	
 	// Update is called once per frame
 	void Update () {
+
         if (FollowMode)
         {
             transform.position = (transform.position + (terget.position - transform.position) * (followTime * 2f));
@@ -31,8 +38,19 @@ public class DropItem : MonoBehaviour {
         }
         else
         {
-            transform.localScale -= (transform.localScale - Vector3.one) * 0.5f;
-            transform.Rotate(new Vector3(0, 30, 0) * Time.deltaTime);
+            if(rotate)
+            {
+                transform.localScale -= (transform.localScale - Vector3.one) * 0.5f;
+                transform.Rotate(new Vector3(0, 30, 0) * Time.deltaTime);
+            }
+            else if(floating)
+            {
+                floatingTime += Time.deltaTime * 0.3f;
+                if(floatingTime > 1f)
+                    floatingTime -= Mathf.FloorToInt(floatingTime)+1;
+                child.transform.localPosition = new Vector3(0, (Mathf.Abs(floatingTime))*0.1f+0.25f, 0);
+                transform.rotation = CameraControllerZoomAndRotate.CameraRotate;
+            }
         }
 	}
 
@@ -74,7 +92,7 @@ public class DropItem : MonoBehaviour {
                     
                     GameObject newBlock = Instantiate((GameObject)Resources.Load("prefab/DropItem"), other.transform.position, Quaternion.identity);
                     DropItem drop = newBlock.GetComponent<DropItem>();
-                    drop.setItemObj(item.previewPath);
+                    drop.setItemObj(item.previewPath, scale);
                     drop.WillDeleted = true;
                     drop.StartFollow(transform);
                 }
@@ -104,29 +122,42 @@ public class DropItem : MonoBehaviour {
     public void setItem(Item i)
     {        
         item = i;
-        GameObject obj = setItemObj(i.previewPath);
+        scale = Vector3.one;
+        
+        if (i as ItemCube       != null) scale = Vector3.one / 3f / 1.5f;
+        if (i as ItemEquipment  != null) scale = Vector3.one / 2f;
+        child = setItemObj(i.previewPath, scale);
+
         ItemCube itemCube = i as ItemCube;
         if (itemCube != null)
-            setItemTexture(obj,PathManager.CubeTexturePath(itemCube.type));
+        {
+            rotate = true;
+            setItemTexture(PathManager.CubeTexturePath(itemCube.type));
+        }
+        else if (i as ItemEquipment != null)
+        {
+            floating = true;
+            setItemTexture(PathManager.iconPath + "item_tmp");
+        }
     }
 
-    public GameObject setItemObj(string path)
+    public GameObject setItemObj(string path,Vector3 scale)
     {
         GameObject obj = Instantiate((GameObject)Resources.Load(path), Vector3.zero, Quaternion.identity);
         obj.transform.SetParent(transform);
         obj.transform.localPosition = new Vector3(0,1/3f,0);
-        obj.transform.localScale = Vector3.one / 3f / 1.5f;
+        obj.transform.localScale = scale;
         return obj;
     }
-    public void setItemTexture(GameObject obj, string path)
+    public void setItemTexture(string path)
     {
-        setItemTexture(obj,TextureManager.Load(path));
+        setItemTexture(TextureManager.Load(path));
     }
-    public void setItemTexture(GameObject obj,Texture txt)
+    public void setItemTexture(Texture txt)
     {
         if (txt == null) return;
 
-        obj.GetComponent<MeshRenderer>().material.mainTexture = txt;
+        child.GetComponent<MeshRenderer>().material.mainTexture = txt;
     }
 
 
