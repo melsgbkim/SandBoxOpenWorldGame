@@ -1,11 +1,15 @@
-﻿using System.Collections;
+﻿using System.Xml;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Main : MonoBehaviour {
     // Use this for initialization
     void Start () {
-        
+        //XMLLoader.Loader.CreateXml();
+        XmlFile file = XMLLoader.Loader.File("XML/tmp");
+        XmlElement tmp = file.GetNodeByID("tmp", "Character");
+        print(tmp);
     }
     float deltaTime = 0.0f;
     // Update is called once per frame
