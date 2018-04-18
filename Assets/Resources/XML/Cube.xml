@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CubeInfo>
+  <Cube id="cube_grass">
+    <Name>grass</Name>
+    <Destroy>
+      <RandomDropItem percent="1"   >item_cube_00000001</RandomDropItem>
+      <RandomDropItem percent="0.5" >item_cube_00000001</RandomDropItem>
+    </Destroy>
+    <Texture>Texture/CubeGrass</Texture>
+  </Cube>
+  <Cube id="cube_dirt">
+    <Name>grass</Name>
+    <Destroy>
+      <RandomDropItem percent="1"   >item_cube_00000002</RandomDropItem>
+      <RandomDropItem percent="0.5" >item_cube_00000002</RandomDropItem>
+    </Destroy>
+    <Texture>Texture/CubeDirt</Texture>
+  </Cube>
+</CubeInfo>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ItemInfo>
+  <Item id="item_cube_00000001">
+    <Name>grass</Name>
+    <Category>cube</Category>
+    <ActionBuildCube>cube_grass</ActionBuildCube>
+    <TextureItemIcon>ItemIcon/item_grass</TextureItemIcon>
+  </Item>
+  <Item id="item_cube_00000002">
+    <Name>dirt</Name>
+    <Category>cube</Category>
+    <ActionBuildCube>cube_dirt</ActionBuildCube>
+    <TextureItemIcon>ItemIcon/item_dirt</TextureItemIcon>
+  </Item>
+</ItemInfo>
