@@ -51,7 +51,7 @@ public class PlayerInventory : MonoBehaviour {
             GameObject tmp;
             tmp = Instantiate((GameObject)Resources.Load("prefab/DropItem"), new Vector3(-3, 3, 0), Quaternion.identity);
             DropItem drop = tmp.GetComponent<DropItem>();
-            ItemCube item = new ItemCube(Cube.TYPE.Grass);
+            ItemCube item = new ItemCube("cube_00000001");
             item.StackCount = 9999;
             drop.setItem(item);
 
@@ -62,11 +62,11 @@ public class PlayerInventory : MonoBehaviour {
             ItemCube item;
             for (int i = 0; i < 255; i++)
             {
-                item = new ItemCube(Cube.TYPE.Grass);
+                item = new ItemCube("cube_00000001");
                 item.StackCount = 9999;
                 AddItem(item);
             }
-            item = new ItemCube(Cube.TYPE.Grass);
+            item = new ItemCube("cube_00000001");
             item.StackCount = 9998;
             AddItem(item);
         }

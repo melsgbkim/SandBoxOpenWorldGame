@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class XMLLoader {
-    public XMLLoader()
+public class XMLFileLoader {
+    public XMLFileLoader()
     {
         init();
     }
@@ -17,7 +17,8 @@ public class XMLLoader {
 
     public XmlFile File(string path)
     {
-        if(XmlTable.ContainsKey(path))
+        path = XMLPath + path;
+        if (XmlTable.ContainsKey(path))
         {
             XmlFile result = XmlTable[path] as XmlFile;
             if (result != null)
@@ -31,17 +32,17 @@ public class XMLLoader {
 
         return XmlTable[path] as XmlFile;
     }
-    static string XMLPath = "./Assets/Resources/XML/";
+    static string XMLPath = "XML/";
 
     Hashtable XmlTable;
 
-    static XMLLoader loader = null;
-    public static XMLLoader Loader
+    static XMLFileLoader loader = null;
+    public static XMLFileLoader Loader
     {
         get
         {
             if (loader == null)
-                loader = new XMLLoader();
+                loader = new XMLFileLoader();
             return loader;
         }
     }

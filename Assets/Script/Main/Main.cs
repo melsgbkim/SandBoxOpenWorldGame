@@ -6,10 +6,12 @@ using UnityEngine;
 public class Main : MonoBehaviour {
     // Use this for initialization
     void Start () {
-        //XMLLoader.Loader.CreateXml();
-        XmlFile file = XMLLoader.Loader.File("XML/tmp");
+        //XMLFileLoader.Loader.CreateXml();
+        /*XmlFile file = XMLFileLoader.Loader.File("XML/tmp");
         XmlElement tmp = file.GetNodeByID("tmp", "Character");
-        print(tmp);
+        print(tmp);*/
+        XmlElement CubeItem = XMLFileLoader.Loader.File("Cube").GetNodeByID("cube_00000003", "Cube");
+        print(CubeItem);
     }
     float deltaTime = 0.0f;
     // Update is called once per frame

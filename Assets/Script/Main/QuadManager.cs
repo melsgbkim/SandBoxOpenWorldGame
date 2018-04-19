@@ -24,13 +24,32 @@ public class QuadManager : MonoBehaviour {
     {
         if(DirList.Count == 0)
         {
-            DirList.Add(DIRECTION.front);
-            DirList.Add(DIRECTION.back);
-            DirList.Add(DIRECTION.right);
-            DirList.Add(DIRECTION.left);
-            DirList.Add(DIRECTION.top);
+            DirList.Add(DIRECTION.front );
+            DirList.Add(DIRECTION.back  );
+            DirList.Add(DIRECTION.right );
+            DirList.Add(DIRECTION.left  );
+            DirList.Add(DIRECTION.top   );
             DirList.Add(DIRECTION.bottom);
         }
+    }
+
+    public static List<QuadManager.DIRECTION?> GetDirListByStr(string v1 = "", string v2 = "", string v3 = "", string v4 = "", string v5 = "", string v6 = "")
+    {
+        List<QuadManager.DIRECTION?> result = new List<QuadManager.DIRECTION?>();
+        Hashtable DirTable = new Hashtable();
+        DirTable.Add("front", DIRECTION.front);
+        DirTable.Add("back", DIRECTION.back);
+        DirTable.Add("right", DIRECTION.right);
+        DirTable.Add("left", DIRECTION.left);
+        DirTable.Add("top", DIRECTION.top);
+        DirTable.Add("bottom", DIRECTION.bottom);
+        if (v1 != "") result.Add(DirTable[v1] as QuadManager.DIRECTION?);
+        if (v2 != "") result.Add(DirTable[v2] as QuadManager.DIRECTION?);
+        if (v3 != "") result.Add(DirTable[v3] as QuadManager.DIRECTION?);
+        if (v4 != "") result.Add(DirTable[v4] as QuadManager.DIRECTION?);
+        if (v5 != "") result.Add(DirTable[v5] as QuadManager.DIRECTION?);
+        if (v6 != "") result.Add(DirTable[v6] as QuadManager.DIRECTION?);
+        return result;
     }
     // Use this for initialization
     void Start () {
@@ -62,7 +81,7 @@ public class QuadManager : MonoBehaviour {
 
     public void AddQuadAllDir(Cube cube)
     {
-        List<DIRECTION> dirList = new List<DIRECTION>();
+        /*List<DIRECTION> dirList = new List<DIRECTION>();
         dirList.Add(DIRECTION.front);
         dirList.Add(DIRECTION.back);
         dirList.Add(DIRECTION.right);
@@ -70,7 +89,7 @@ public class QuadManager : MonoBehaviour {
         dirList.Add(DIRECTION.top);
         dirList.Add(DIRECTION.bottom);
         AddQuad(cube, dirList);
-        cube.setQuadSize();
+        cube.setQuadSize();*/
     }
     public void AddQuad(Cube cube,List<DIRECTION> dirList)
     {
@@ -79,13 +98,13 @@ public class QuadManager : MonoBehaviour {
             //print(cube);
             //print(QuadPrefabList[(int)(cube.type)]);
             //print(dir);
-            Transform quad = Instantiate(QuadPrefabList[(int)(cube.type)], Vector3.zero, Quaternion.identity);
+            /*Transform quad = Instantiate(QuadPrefabList[(int)(cube.type)], Vector3.zero, Quaternion.identity);
             quad.parent = cube.transform;
             quad.localPosition = Vec3Arr[(int)(dir)];
             quad.localRotation = QuatArr[(int)(dir)];
             quad.localScale = Vector3.one;
             cube.QuadList[(int)(dir)] = quad;
-            QuadInTheworld.Add(quad);
+            QuadInTheworld.Add(quad);*/
         }
     }
 }

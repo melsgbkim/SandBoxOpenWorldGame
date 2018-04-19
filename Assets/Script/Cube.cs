@@ -12,6 +12,8 @@ public class Cube : MonoBehaviour {
     public string treeName = "";
     public float CheckedTime = 0f;
 
+    
+
     bool initialized = false;
 
     public enum TYPE
@@ -20,7 +22,7 @@ public class Cube : MonoBehaviour {
         Grass,
         Dirt
     };
-    public TYPE type = TYPE.Air;
+    public string type = "cube_00000000";
 
     public void init()
     {

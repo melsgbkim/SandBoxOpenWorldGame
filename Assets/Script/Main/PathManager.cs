@@ -6,13 +6,13 @@ public class PathManager
     public const string iconPath = "ItemIcon/";
     public const string previewPath = "prefab/DropItemPreview/";
 
-    public static string CubeTexturePath(Cube.TYPE type)
+    public static string CubeTexturePath(string type)
     {
         switch (type)
         {
-            case Cube.TYPE.Grass: return "Texture/CubeGrass"; 
-            case Cube.TYPE.Dirt: return "Texture/CubeDirt"; 
-            case Cube.TYPE.Air: return "Texture/CubeNone"; 
+            case "cube_00000001": return "Texture/CubeGrass"; 
+            case "cube_00000002": return "Texture/CubeDirt"; 
+            case "cube_00000000": return "Texture/CubeNone"; 
         }
         return "";
     }

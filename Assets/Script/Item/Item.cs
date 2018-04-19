@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Xml;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class Item
     public CoolTime coolTime = new CoolTime();
     public string iconPath = "";
     public string previewPath = "";
-    public int grade = 0;
+    public string grade = "0";
     public ItemUI ui = null;
 
     public virtual bool ItemWillDelete() { return false; }
@@ -80,25 +81,33 @@ public class ItemStackable : Item
 
 public class ItemCube : ItemStackable
 {
-    public Cube.TYPE type;
+    public string type;
     public bool BulidMode = false;
     public bool start = true;
     public Vector3 BulidPosition = Vector3.zero;
     public GameObject point;
     public GameObject pointCube;
 
-    public ItemCube(Cube.TYPE type)
+    public ItemCube(string type)
     {
         coolTime.time = 1 / 60f;
         this.type = type;
         Stackable = true;
         StackMax = 9999;
-        switch (type)
+
+        XmlElement CubeItem = XMLFileLoader.Loader.File("Item").GetNodeByID(type, "Item");
+        name = XMLUtil.FindOneByTagIdValue(CubeItem, "Name").InnerText;
+        grade = XMLUtil.FindOneByTagIdValue(CubeItem, "Grade").InnerText;
+        iconPath = XMLUtil.FindOneByTagIdValue(CubeItem, "Texture", "type", "ItemIcon").InnerText;
+        XmlElement prefabElement = XMLUtil.FindOneByTagIdValue(CubeItem, "PreviewItemPrefab");
+        switch(prefabElement.GetAttribute("path"))
         {
-            case Cube.TYPE.Grass: name = "grass"; grade = 1; break;
+            case "all": previewPath = prefabElement.InnerText; break;
+            case "default": previewPath = PathManager.previewPath + prefabElement.InnerText;break;
         }
-        iconPath = PathManager.iconPath + "item_" + name;
-        previewPath = PathManager.previewPath + "CubeItem";
+
+        //iconPath = PathManager.iconPath + "item_" + name;//<Texture type="ItemIcon"> from xml file
+        //previewPath = PathManager.previewPath + "CubeItem";//<PreviewItemPrefab path="default"> from xml file
     }
 
     public override void ItemUse(float count)

@@ -14,7 +14,7 @@ public class WorldMeshCube : MonoBehaviour {
     // Use this for initialization
 
     List<int> triIndexList = new List<int>();
-    public Cube.TYPE type;
+    public string type;
 
     static QuadTreeIndexList[] TreeIndexArr = null;
 
@@ -68,11 +68,6 @@ public class WorldMeshCube : MonoBehaviour {
     }
     int TextureNum = 0;
     // Update is called once per frame
-
-    public void addBlock(Vector3 center)
-    {
-        addBlock(center, Vector3.one);
-    }
 
     public void addBlock(Vector3 center, Vector3 size)
     {
@@ -136,7 +131,7 @@ public class WorldMeshCube : MonoBehaviour {
             {
                 if (quad.normal == -list[i].normal)
                 {
-                    deleteQuad(quad.V2Start, quad.V2End, list[i]);
+                    list[i].parentMesh.deleteQuad(quad.V2Start, quad.V2End, list[i]);
                     if (deleteTable.ContainsKey(list[i].parentMesh) == false)
                         deleteTable.Add(list[i].parentMesh, new List<int>());
                     (deleteTable[list[i].parentMesh] as List<int>).Add(list[i].triIndex);

@@ -179,7 +179,7 @@ public class DropItem : MonoBehaviour {
         }
     }
 
-    public static void DropItemPosCube(Cube.TYPE type, float count,Vector3 pos, Vector3 vel)
+    public static void DropItemPosCube(string type, float count,Vector3 pos, Vector3 vel)
     {
         ItemCube i = new ItemCube(type);
         i.ItemGet(count);

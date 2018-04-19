@@ -3,13 +3,45 @@
   <Item id="item_cube_00000001">
     <Name>grass</Name>
     <Category>cube</Category>
-    <ActionBuildCube>cube_grass</ActionBuildCube>
-    <TextureItemIcon>ItemIcon/item_grass</TextureItemIcon>
+    <Grade>1</Grade>
+    <Action type="BuildCube">cube_00000001</Action>
+    <Texture type="ItemIcon">Texture/cube_grass</Texture>
+    <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
   </Item>
+
   <Item id="item_cube_00000002">
     <Name>dirt</Name>
     <Category>cube</Category>
-    <ActionBuildCube>cube_dirt</ActionBuildCube>
-    <TextureItemIcon>ItemIcon/item_dirt</TextureItemIcon>
+    <Grade>1</Grade>
+    <Action type="BuildCube">cube_00000002</Action>
+    <Texture type="ItemIcon">ItemIcon/cube_dirt</Texture>
+    <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
+  </Item>
+
+  <Item id="item_cube_00000003">
+    <Name>stone</Name>
+    <Category>cube</Category>
+    <Grade>1</Grade>
+    <Action type="BuildCube">cube_00000003</Action>
+    <Texture type="ItemIcon">ItemIcon/cube_stone</Texture>
+    <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
+  </Item>
+
+  <Item id="item_cube_00000004">
+    <Name>wood</Name>
+    <Category>cube</Category>
+    <Grade>1</Grade>
+    <Action type="BuildCube">cube_00000004</Action>
+    <Texture type="ItemIcon">ItemIcon/cube_wood</Texture>
+    <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
+  </Item>
+
+  <Item id="item_cube_00000005">
+    <Name>leaf</Name>
+    <Category>cube</Category>
+    <Grade>1</Grade>
+    <Action type="BuildCube">cube_00000005</Action>
+    <Texture type="ItemIcon">ItemIcon/cube_leaf</Texture>
+    <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
   </Item>
 </ItemInfo>

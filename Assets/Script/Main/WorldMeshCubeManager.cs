@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System.Xml;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldMeshCubeManager : MonoBehaviour {
     Hashtable MeshCubeManagerTable = new Hashtable();
-    Cube.TYPE targetType = Cube.TYPE.Grass;
+    string targetType = "cube_00000001";
     Vector3 pos = Vector3.zero;
 
     public WorldMeshCube prefab;
@@ -22,60 +23,57 @@ public class WorldMeshCubeManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.F6))   max = 1;
         if (Input.GetKeyDown(KeyCode.F7))   max = 20;
 
-        if (Input.GetKeyDown(KeyCode.Keypad1)) targetType = Cube.TYPE.Grass;
-        if (Input.GetKeyDown(KeyCode.Keypad2)) targetType = Cube.TYPE.Dirt;
+        if (Input.GetKeyDown(KeyCode.Keypad1)) targetType = "cube_00000001";
+        if (Input.GetKeyDown(KeyCode.Keypad2)) targetType = "cube_00000002";
         if (max > 0)
         {
             for (int i = 0; i < max; i++)
             {
-                NewMeshCube(pos,targetType);
+                NewMeshCube(pos,targetType,Vector3.one);
                 pos += Vector3.forward;
             }
         }
         
     }
 
-    void NewMeshCube(Vector3 center, Cube.TYPE type)
+    public void NewMeshCube(Vector3 center, string type,Vector3 size)
     {
-        if (MeshCubeManagerTable.ContainsKey(type) == false)
-            NewMeshCubeToHashTable(type);
-        (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center);
-    }
+        XmlElement CubeInfo = XMLFileLoader.Loader.File("Cube").GetNodeByID(type, "Cube");
+        XmlNodeList list = CubeInfo.GetElementsByTagName("Texture");
+        foreach(XmlElement node in list)
+        {
+            QuadManager.GetDirListByStr(node.GetAttribute("direction"))
+            
+        }
 
-    public void NewMeshCube(Vector3 center, Cube.TYPE type,Vector3 size)
-    {
         if (MeshCubeManagerTable.ContainsKey(type) == false)
             NewMeshCubeToHashTable(type);
         (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center, size);
     }
 
-    void NewMeshCubeToHashTable(Cube.TYPE type)
+    void NewMeshCubeToHashTable(string type)
     {
         WorldMeshCube c = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         MeshCubeManagerTable.Add(type, c);
         c.Init();
         c.type = type;
-        switch (targetType)
-        {
-            case Cube.TYPE.Grass: c.TexturePath = "Texture/CubeGrass"; break;
-            case Cube.TYPE.Dirt: c.TexturePath = "Texture/CubeDirt"; break;
-            case Cube.TYPE.Air: c.TexturePath = "Texture/CubeNone"; break;
-        }
+        XmlElement CubeInfo = XMLFileLoader.Loader.File("Cube").GetNodeByID(type, "Cube");
+        c.TexturePath = XMLUtil.FindOneByTagIdValue(CubeInfo, "Texture").InnerText;
     }
 
-    public void DeleteMeshRange(Vector3 center, Cube.TYPE type, Vector3 size)
+    public void DeleteMeshRange(Vector3 center, string type, Vector3 size)
     {
         (MeshCubeManagerTable[type] as WorldMeshCube).AddReverseBlock(center, size);
     }
 
-    public void DeleteMeshDirFromCenter(Vector3 center, Cube.TYPE type, Vector3 size, Vector3 dir)
+    public void DeleteMeshDirFromCenter(Vector3 center, string type, Vector3 size, Vector3 dir)
     {
         List<QuadManager.DIRECTION> dirlist = GetDIRList(dir);
         (MeshCubeManagerTable[type] as WorldMeshCube).DeleteMeshDirFromCenter(center, size, dirlist);
     }
 
 
-    public void NewMeshByDeleteCube(Vector3 center, Cube.TYPE type, Vector3 size,Vector3 dir)
+    public void NewMeshByDeleteCube(Vector3 center, string type, Vector3 size,Vector3 dir)
     {
         if (MeshCubeManagerTable.ContainsKey(type) == false)
             NewMeshCubeToHashTable(type);

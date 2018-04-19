@@ -20,16 +20,13 @@ public class XmlFile
             TextAsset textAsset = (TextAsset)Resources.Load(path);
             Debug.Log(textAsset);
             xmlDoc.LoadXml(textAsset.text);
+            XmlFilePath = path;
         }
         catch(SystemException e)
         {
             Debug.Log(e);
             return false;
         }
-        XmlFilePath = path;
-        XmlElement tmp = GetNodeByID("needExp", "Experience");
-        Debug.Log(tmp);
-
         return true;
     }
 
@@ -47,14 +44,14 @@ public class XmlFile
         return list.Count;
     }
 
-    public XmlElement GetNodeByID(string id,string tag)
+    public XmlElement GetNodeByID(string idValue, string tag)
     {
         XmlNodeList list = GetNodeListByTag(tag);
         if (list.Count == 0)
             return null;
         foreach(XmlElement node in list)
         {
-            if (node.GetAttribute("id") == id)
+            if (node.GetAttribute("id") == idValue)
                 return node;
         }
         return null;

@@ -33,8 +33,13 @@ public class BlockManager : MonoBehaviour {
         if(firstUpdate)
         {
             firstUpdate = false;
-            AddBlockRange(BlockPrefab, new Vector3(-100, -5, -100), new Vector3(100, -1, 100), Cube.TYPE.Grass, true);
-            AddBlockRange(BlockPrefab, new Vector3(0, 0, 0), new Vector3(100, 9, 100), Cube.TYPE.Grass, true);
+            AddBlockRange(BlockPrefab, new Vector3(-100, -5, -100), new Vector3(100, -1, 100), "cube_00000001", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 0, 0), new Vector3(100, 9, 100), "cube_00000001", true);
+        
+            AddBlock(BlockPrefab, new Vector3(0, 0, -2), Vector3.one, "cube_00000002", true);
+            AddBlock(BlockPrefab, new Vector3(1, 0, -1), Vector3.one, "cube_00000003", true);
+            AddBlock(BlockPrefab, new Vector3(2, 0, -1), Vector3.one, "cube_00000004", true);
+            AddBlock(BlockPrefab, new Vector3(3, 0, -1), Vector3.one, "cube_00000005", true);
 
 
 
@@ -74,7 +79,7 @@ public class BlockManager : MonoBehaviour {
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 10; j++)
-                    AddBlockRange(BlockPrefab, new Vector3(0, y, 0 + y+ j * 2), new Vector3(20, y, 2 + y+j * 2), Cube.TYPE.Grass, true);
+                    AddBlockRange(BlockPrefab, new Vector3(0, y, 0 + y+ j * 2), new Vector3(20, y, 2 + y+j * 2), "cube_00000001", true);
 
                 y++;
             }
@@ -83,7 +88,7 @@ public class BlockManager : MonoBehaviour {
 
         for (int i = 0; i < max; i++)
         {
-            AddBlock(BlockPrefab, new Vector3(x, y, 1 + z + y), Vector3.one, Cube.TYPE.Grass, true);
+            AddBlock(BlockPrefab, new Vector3(x, y, 1 + z + y), Vector3.one, "cube_00000001", true);
             x++;
             if (x >= 0)
             {
@@ -118,7 +123,7 @@ public class BlockManager : MonoBehaviour {
         GUI.Label(rect, text, style);
     }
 
-    void AddBlockRange(Transform obj, Vector3 Start, Vector3 End, Cube.TYPE type, bool createMesh)
+    void AddBlockRange(Transform obj, Vector3 Start, Vector3 End, string type, bool createMesh)
     {
         if (Start.x > End.x) { Start.x = Start.x.Swap(ref End.x); }
         if (Start.y > End.y) { Start.y = Start.y.Swap(ref End.y); }
@@ -126,11 +131,11 @@ public class BlockManager : MonoBehaviour {
         Vector3 Count = new Vector3(Mathf.Abs(Start.x- End.x), Mathf.Abs(Start.y - End.y), Mathf.Abs(Start.z - End.z)) + Vector3.one;
         AddBlock(obj, (Start + End)/2f, Count,type, createMesh);
     }
-    public bool AddBlock(Vector3 vec, Vector3 size, Cube.TYPE type, bool createMesh)
+    public bool AddBlock(Vector3 vec, Vector3 size, string type, bool createMesh)
     {
         return AddBlock(BlockPrefab, vec, size, type, createMesh);
     }
-    bool AddBlock(Transform obj,Vector3 vec,Vector3 size,Cube.TYPE type, bool createMesh)
+    bool AddBlock(Transform obj,Vector3 vec,Vector3 size,string type, bool createMesh)
     {
         Transform tmp = Instantiate(obj, vec/3f, Quaternion.identity);
         //BlockInTheworld.Add(tmp);
@@ -236,7 +241,7 @@ public class BlockManager : MonoBehaviour {
             //print("list.Count " + list.Count);
             List<Vector3> dirList = DirListDefault;
             List<Vector3> dirListResult = null;
-            Cube.TYPE targetType = target.type;
+            string targetType = target.type;
             deleteBlock(s, e, target, out dirListResult,dirList);
 
             List<Cube> list = OctreeCube.FindRangeList(s + Vector3.one * 0.01f - Vector3.one, e - Vector3.one * 0.01f + Vector3.one);
@@ -342,7 +347,7 @@ public class BlockManager : MonoBehaviour {
 
             foreach (CubeRangeData data in splitList)
             {
-                AddBlock(BlockPrefab, data.center, data.size, Cube.TYPE.Grass, false);
+                AddBlock(BlockPrefab, data.center, data.size, "cube_00000001", false);
             }
         }
         else

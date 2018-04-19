@@ -11,7 +11,7 @@ public class MeshQuad
     public int triIndex;
     public QuadManager.DIRECTION dir;
     public WorldMeshCube parentMesh;
-    public Cube.TYPE type;
+    public string type;
 
     public QuadTreeMeshNode tree;
 
@@ -103,7 +103,7 @@ public class MeshQuad
         return (this.center == other.center && this.size == other.size);
     }
 
-    public MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, Cube.TYPE type,QuadManager.DIRECTION dir,WorldMeshCube parent)
+    public MeshQuad(Vector3 normal, Vector2 uvSize, Vector3 center, Vector3 size, string type,QuadManager.DIRECTION dir,WorldMeshCube parent)
     {
         this.normal = normal;
         this.uvSize = uvSize;
