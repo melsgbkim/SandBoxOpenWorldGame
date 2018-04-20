@@ -47,13 +47,11 @@ public class PlayerInventory : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.F3))
         {
-            //Instantiate((GameObject)Resources.Load("prefab/DropItem"), new Vector3(-3, 8, 0), Quaternion.identity);
-            GameObject tmp;
-            tmp = Instantiate((GameObject)Resources.Load("prefab/DropItem"), new Vector3(-3, 3, 0), Quaternion.identity);
-            DropItem drop = tmp.GetComponent<DropItem>();
-            ItemCube item = new ItemCube("cube_00000001");
-            item.StackCount = 9999;
-            drop.setItem(item);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000001", 10), new Vector3(-3, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000002", 10), new Vector3(-4, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000003", 10), new Vector3(-5, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000004", 10), new Vector3(-6, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000005", 10), new Vector3(-7, 3, 0), Vector3.zero);
 
             //AddItem(item);
         }
@@ -61,14 +59,8 @@ public class PlayerInventory : MonoBehaviour {
         {
             ItemCube item;
             for (int i = 0; i < 255; i++)
-            {
-                item = new ItemCube("cube_00000001");
-                item.StackCount = 9999;
-                AddItem(item);
-            }
-            item = new ItemCube("cube_00000001");
-            item.StackCount = 9998;
-            AddItem(item);
+                DropItem.DropItemPos(new ItemCube("item_cube_00000001", 9999), new Vector3(-3, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000001", 9998), new Vector3(-3, 3, 0), Vector3.zero);
         }
         if (Input.GetKeyDown(KeyCode.F5))
         {

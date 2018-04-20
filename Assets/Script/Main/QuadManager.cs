@@ -33,6 +33,28 @@ public class QuadManager : MonoBehaviour {
         }
     }
 
+    public static void SetDirListAll(out List<QuadManager.DIRECTION> list)
+    {
+        list = new List<DIRECTION>();
+        list.Add(DIRECTION.front);
+        list.Add(DIRECTION.back);
+        list.Add(DIRECTION.right);
+        list.Add(DIRECTION.left);
+        list.Add(DIRECTION.top);
+        list.Add(DIRECTION.bottom);
+    }
+
+    public static QuadManager.DIRECTION GetDirByStr(string v)
+    {
+        if (v == "front") return DIRECTION.front;
+        if (v == "back") return DIRECTION.back;
+        if (v == "right") return DIRECTION.right;
+        if (v == "left") return DIRECTION.left;
+        if (v == "top") return DIRECTION.top;
+        if (v == "bottom") return DIRECTION.bottom;
+        return DIRECTION.max;
+    }
+
     public static List<QuadManager.DIRECTION?> GetDirListByStr(string v1 = "", string v2 = "", string v3 = "", string v4 = "", string v5 = "", string v6 = "")
     {
         List<QuadManager.DIRECTION?> result = new List<QuadManager.DIRECTION?>();

@@ -6,6 +6,14 @@ using UnityEngine;
 
 public class XMLUtil
 {
+    public static XmlElement FindOneByTag(XmlElement element, string tag)
+    {
+        XmlNodeList list = element.GetElementsByTagName(tag);
+        foreach (XmlElement node in list)
+            return node;
+        return null;
+    }
+
     public static XmlElement FindOneByIdValue(XmlNodeList list,string id,string idValue)
     {
         foreach (XmlElement node in list)

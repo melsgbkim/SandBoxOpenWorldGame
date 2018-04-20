@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Xml;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -128,17 +129,9 @@ public class DropItem : MonoBehaviour {
         if (i as ItemEquipment  != null) scale = Vector3.one / 2f;
         child = setItemObj(i.previewPath, scale);
 
-        ItemCube itemCube = i as ItemCube;
-        if (itemCube != null)
-        {
-            rotate = true;
-            setItemTexture(PathManager.CubeTexturePath(itemCube.type));
-        }
-        else if (i as ItemEquipment != null)
-        {
-            floating = true;
-            setItemTexture(PathManager.iconPath + "item_tmp");
-        }
+        setItemTexture(i.iconPath);
+        if (i as ItemCube != null)              rotate = true;
+        else if (i as ItemEquipment != null)    floating = true;
     }
 
     public GameObject setItemObj(string path,Vector3 scale)
@@ -184,6 +177,27 @@ public class DropItem : MonoBehaviour {
         ItemCube i = new ItemCube(type);
         i.ItemGet(count);
         DropItemPos(i, pos, vel);
+    }
+
+    public static void DropItemPosRandom(XmlElement node, Vector3 pos, Vector3 vel)
+    {
+        string id = node.InnerText;
+        string _minPercent = node.GetAttribute("percent");
+        string _RandomCountMin = node.GetAttribute("min");
+        string _RandomCountMax = node.GetAttribute("max");
+
+        float minPercent = (_minPercent == "" ? 1:float.Parse(_minPercent));
+        float Min = (_RandomCountMin == "" ? 1 : float.Parse(_RandomCountMin));
+        float Max = (_RandomCountMax == "" ? 1 : float.Parse(_RandomCountMax));
+
+        XmlElement ItemInfo = XMLFileLoader.Loader.File("Item").GetNodeByID(id, "Item");
+        string Category = XMLUtil.FindOneByTag(ItemInfo, "Category").InnerText;
+
+        switch(Category)
+        {
+            case "cube":DropItemPos(new ItemCube(id, Random.RandomRange(Min,Max)*1f),pos,vel); break;
+        }
+
     }
 
     public static Vector3 RandomUpperVel()

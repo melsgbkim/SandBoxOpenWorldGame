@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Item
 {
+    private string _id = "";
+
     public string name = "";
     public Vector2 pos = Vector2.zero;
     //    public Vector2 size = Vector2.zero;
@@ -37,6 +39,26 @@ public class Item
     {
         if (ui != null) ui.UpdateStackCount();
     }
+
+    public string id
+    {
+        get { return _id; }
+        set
+        {
+            _id = value;
+            XmlElement Item = XMLFileLoader.Loader.File("Item").GetNodeByID(value, "Item");
+            name = XMLUtil.FindOneByTagIdValue(Item, "Name").InnerText;
+            grade = XMLUtil.FindOneByTagIdValue(Item, "Grade").InnerText;
+            iconPath = XMLUtil.FindOneByTagIdValue(Item, "Texture", "type", "ItemIcon").InnerText;
+            XmlElement prefabElement = XMLUtil.FindOneByTagIdValue(Item, "PreviewItemPrefab");
+            switch (prefabElement.GetAttribute("path"))
+            {
+                case "all": previewPath = prefabElement.InnerText; break;
+                case "default": previewPath = PathManager.previewPath + prefabElement.InnerText; break;
+            }
+        }
+    }
+
 }
 
 public class ItemEquipment : Item
@@ -88,26 +110,26 @@ public class ItemCube : ItemStackable
     public GameObject point;
     public GameObject pointCube;
 
-    public ItemCube(string type)
+    public ItemCube(string id)
     {
         coolTime.time = 1 / 60f;
-        this.type = type;
+        this.type = id;
         Stackable = true;
         StackMax = 9999;
+        StackCount = 1;
 
-        XmlElement CubeItem = XMLFileLoader.Loader.File("Item").GetNodeByID(type, "Item");
-        name = XMLUtil.FindOneByTagIdValue(CubeItem, "Name").InnerText;
-        grade = XMLUtil.FindOneByTagIdValue(CubeItem, "Grade").InnerText;
-        iconPath = XMLUtil.FindOneByTagIdValue(CubeItem, "Texture", "type", "ItemIcon").InnerText;
-        XmlElement prefabElement = XMLUtil.FindOneByTagIdValue(CubeItem, "PreviewItemPrefab");
-        switch(prefabElement.GetAttribute("path"))
-        {
-            case "all": previewPath = prefabElement.InnerText; break;
-            case "default": previewPath = PathManager.previewPath + prefabElement.InnerText;break;
-        }
+        this.id = id;
+    }
 
-        //iconPath = PathManager.iconPath + "item_" + name;//<Texture type="ItemIcon"> from xml file
-        //previewPath = PathManager.previewPath + "CubeItem";//<PreviewItemPrefab path="default"> from xml file
+    public ItemCube(string id,float count)
+    {
+        coolTime.time = 1 / 60f;
+        this.type = id;
+        Stackable = true;
+        StackMax = 9999;
+        StackCount = count;
+
+        this.id = id;
     }
 
     public override void ItemUse(float count)

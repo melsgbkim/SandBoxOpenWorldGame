@@ -14,7 +14,7 @@
     <Category>cube</Category>
     <Grade>1</Grade>
     <Action type="BuildCube">cube_00000002</Action>
-    <Texture type="ItemIcon">ItemIcon/cube_dirt</Texture>
+    <Texture type="ItemIcon">Texture/cube_dirt</Texture>
     <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
   </Item>
 
@@ -23,7 +23,7 @@
     <Category>cube</Category>
     <Grade>1</Grade>
     <Action type="BuildCube">cube_00000003</Action>
-    <Texture type="ItemIcon">ItemIcon/cube_stone</Texture>
+    <Texture type="ItemIcon">Texture/cube_stone</Texture>
     <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
   </Item>
 
@@ -32,7 +32,7 @@
     <Category>cube</Category>
     <Grade>1</Grade>
     <Action type="BuildCube">cube_00000004</Action>
-    <Texture type="ItemIcon">ItemIcon/cube_wood</Texture>
+    <Texture type="ItemIcon">Texture/cube_wood</Texture>
     <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
   </Item>
 
@@ -41,7 +41,7 @@
     <Category>cube</Category>
     <Grade>1</Grade>
     <Action type="BuildCube">cube_00000005</Action>
-    <Texture type="ItemIcon">ItemIcon/cube_leaf</Texture>
+    <Texture type="ItemIcon">Texture/cube_leaf</Texture>
     <PreviewItemPrefab path="default">CubeItem</PreviewItemPrefab>
   </Item>
 </ItemInfo>

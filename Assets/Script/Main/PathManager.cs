@@ -10,9 +10,9 @@ public class PathManager
     {
         switch (type)
         {
-            case "cube_00000001": return "Texture/CubeGrass"; 
-            case "cube_00000002": return "Texture/CubeDirt"; 
-            case "cube_00000000": return "Texture/CubeNone"; 
+            case "item_cube_00000001": return "Texture/cube_grass"; 
+            case "item_cube_00000002": return "Texture/cube_dirt"; 
+            case "item_cube_00000000": return "Texture/CubeNone"; 
         }
         return "";
     }

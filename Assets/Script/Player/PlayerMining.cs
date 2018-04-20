@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Xml;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,7 +52,18 @@ public class PlayerMining : MonoBehaviour {
 
             List<Cube> tmpList = c.myTree.FindRangeList(tmpVector, tmpVector);
 
-            DropItem.DropItemPosCube(c.type, 1, hitInfo.point, DropItem.RandomUpperVel());            
+            XmlElement CubeInfo = XMLFileLoader.Loader.File("Cube").GetNodeByID(c.type, "Cube");
+            XmlElement CubeDestroyInfo = XMLUtil.FindOneByTag(CubeInfo,"Destroy");
+            foreach(XmlElement node in CubeDestroyInfo.ChildNodes)
+            {
+                switch(node.Name)
+                {
+                    case "RandomDropItem": DropItem.DropItemPosRandom(node, hitInfo.point, DropItem.RandomUpperVel()); break;
+                }
+            }
+
+
+            //DropItem.DropItemPosCube(c.type, 1, hitInfo.point, DropItem.RandomUpperVel());            
 
             if (blockmanager.deleteBlock(tmpVector,Vector3.one) == false)
             {

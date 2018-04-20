@@ -36,19 +36,49 @@ public class WorldMeshCubeManager : MonoBehaviour {
         
     }
 
-    public void NewMeshCube(Vector3 center, string type,Vector3 size)
+    public Hashtable GetMatchListTextureWithDir(string type,out List<QuadManager.DIRECTION> defaultDir)
     {
+        Hashtable table = new Hashtable();
+        Hashtable ListTable = new Hashtable();
+        QuadManager.SetDirListAll(out defaultDir);
         XmlElement CubeInfo = XMLFileLoader.Loader.File("Cube").GetNodeByID(type, "Cube");
         XmlNodeList list = CubeInfo.GetElementsByTagName("Texture");
-        foreach(XmlElement node in list)
+        foreach (XmlElement node in list)
         {
-            QuadManager.GetDirListByStr(node.GetAttribute("direction"))
-            
+            QuadManager.DIRECTION dir = QuadManager.GetDirByStr(node.GetAttribute("direction"));
+            table.Add(dir, node.InnerText);
+            if (ListTable.ContainsKey(node.InnerText) == false)
+            {
+                List<QuadManager.DIRECTION> dirList = new List<QuadManager.DIRECTION>();
+                if (dir == QuadManager.DIRECTION.max) dirList = null;
+                else
+                {
+                    defaultDir.Remove(dir);
+                    dirList.Add(dir);
+                }
+                ListTable.Add(node.InnerText, dirList);
+            }
+            else
+            {
+                (ListTable[node.InnerText] as List<QuadManager.DIRECTION>).Add(dir);
+            }
         }
+        return ListTable;
+    }
 
-        if (MeshCubeManagerTable.ContainsKey(type) == false)
-            NewMeshCubeToHashTable(type);
-        (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center, size);
+    public void NewMeshCube(Vector3 center, string type,Vector3 size)
+    {
+        List<QuadManager.DIRECTION> DefaultValueList;
+        Hashtable ListTable = GetMatchListTextureWithDir(type, out DefaultValueList);
+
+        foreach (string key in ListTable.Keys)
+        {
+            List<QuadManager.DIRECTION> dirlist = (ListTable[key] as List<QuadManager.DIRECTION>);
+            if (dirlist == null) dirlist = DefaultValueList;
+            if (MeshCubeManagerTable.ContainsKey(key) == false)
+                NewMeshCubeToHashTable(key);
+            (MeshCubeManagerTable[key] as WorldMeshCube).addBlock(center, size,dirlist);
+        }
     }
 
     void NewMeshCubeToHashTable(string type)
@@ -57,14 +87,11 @@ public class WorldMeshCubeManager : MonoBehaviour {
         MeshCubeManagerTable.Add(type, c);
         c.Init();
         c.type = type;
-        XmlElement CubeInfo = XMLFileLoader.Loader.File("Cube").GetNodeByID(type, "Cube");
-        c.TexturePath = XMLUtil.FindOneByTagIdValue(CubeInfo, "Texture").InnerText;
+        c.TexturePath = type;
+        /*XmlElement CubeInfo = XMLFileLoader.Loader.File("Cube").GetNodeByID(type, "Cube");
+        c.TexturePath = XMLUtil.FindOneByTagIdValue(CubeInfo, "Texture").InnerText;*/
     }
 
-    public void DeleteMeshRange(Vector3 center, string type, Vector3 size)
-    {
-        (MeshCubeManagerTable[type] as WorldMeshCube).AddReverseBlock(center, size);
-    }
 
     public void DeleteMeshDirFromCenter(Vector3 center, string type, Vector3 size, Vector3 dir)
     {

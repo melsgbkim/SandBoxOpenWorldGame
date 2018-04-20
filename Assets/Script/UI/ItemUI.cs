@@ -64,6 +64,8 @@ public class ItemUI : MonoBehaviour {
             else
             {
                 itemCubeIcon.enabled = true;
+
+                //to do : change to xml
                 itemCubeIcon.SetCubeType((i as ItemCube).type);
             }
             

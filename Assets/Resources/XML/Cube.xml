@@ -4,7 +4,7 @@
     <Name>grass</Name>
     <Destroy>
       <RandomDropItem percent="1"   >item_cube_00000001</RandomDropItem>
-      <RandomDropItem percent="0.5" >item_cube_00000001</RandomDropItem>
+      <RandomDropItem percent="0.5" min="1" max="3">item_cube_00000001</RandomDropItem>
     </Destroy>
     <Texture>Texture/cube_grass</Texture>
   </Cube>
@@ -13,7 +13,7 @@
     <Name>dirt</Name>
     <Destroy>
       <RandomDropItem percent="1"   >item_cube_00000002</RandomDropItem>
-      <RandomDropItem percent="0.5" >item_cube_00000002</RandomDropItem>
+      <RandomDropItem percent="0.5" min="1" max="3">item_cube_00000002</RandomDropItem>
     </Destroy>
     <Texture>Texture/cube_dirt</Texture>
   </Cube>
@@ -22,7 +22,7 @@
     <Name>stone</Name>
     <Destroy>
       <RandomDropItem percent="1"   >item_cube_00000003</RandomDropItem>
-      <RandomDropItem percent="0.5" >item_cube_00000003</RandomDropItem>
+      <RandomDropItem percent="0.5" min="1" max="3">item_cube_00000003</RandomDropItem>
     </Destroy>
     <Texture>Texture/cube_stone</Texture>
   </Cube>
@@ -31,10 +31,10 @@
     <Name>wood</Name>
     <Destroy>
       <RandomDropItem percent="1"   >item_cube_00000004</RandomDropItem>
-      <RandomDropItem percent="0.5" >item_cube_00000004</RandomDropItem>
+      <RandomDropItem percent="0.5" min="1" max="3">item_cube_00000004</RandomDropItem>
     </Destroy>
-    <Texture direction="top">Texture/CubeWoodTop</Texture>
-    <Texture direction="bottom">Texture/CubeWoodTop</Texture>
+    <Texture direction="top">Texture/cube_wood_top</Texture>
+    <Texture direction="bottom">Texture/cube_wood_top</Texture>
     <Texture>Texture/cube_wood</Texture>
   </Cube>
 
@@ -42,7 +42,7 @@
     <Name>leaf</Name>
     <Destroy>
       <RandomDropItem percent="1"   >item_cube_00000005</RandomDropItem>
-      <RandomDropItem percent="0.5" >item_cube_00000005</RandomDropItem>
+      <RandomDropItem percent="0.5" min="1" max="3">item_cube_00000005</RandomDropItem>
     </Destroy>
     <Texture>Texture/cube_leaf</Texture>
   </Cube>
