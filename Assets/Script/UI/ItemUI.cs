@@ -8,7 +8,6 @@ public class ItemUI : MonoBehaviour {
     public RawImage itemGrade;
     public RawImage itemBack;
     public Text txt;
-    public ItemCubeIcon itemCubeIcon;
     public Item item = null;
     public ItemSlot slot;
     // Use this for initialization
@@ -44,7 +43,6 @@ public class ItemUI : MonoBehaviour {
             itemGrade.enabled = false;
             itemBack.enabled = false;
             txt.enabled = false;
-            itemCubeIcon.enabled = false;
             ItemSlot slot = GetComponent<ItemSlot>();
             slot.target = null;
         }
@@ -56,22 +54,22 @@ public class ItemUI : MonoBehaviour {
             itemBack.enabled = true;
             txt.enabled = true;
 
-            if(i as ItemCube == null)
-            {
+            /*if(i as ItemCube == null)
+            {*/
                 itemIcon.enabled = true;
-                itemIcon.texture = (Texture)Resources.Load("ItemIcon/item_" + item.name);
-            }
+                itemIcon.texture = (Texture)Resources.Load(item.iconPath);
+            /*}
             else
             {
                 itemCubeIcon.enabled = true;
 
                 //to do : change to xml
                 itemCubeIcon.SetCubeType((i as ItemCube).type);
-            }
+            }*/
             
 
             
-            itemGrade.texture = (Texture)Resources.Load("ItemIcon/item_grade_" + item.grade);
+            itemGrade.texture = (Texture)Resources.Load("Texture/ItemIcon/item_grade_" + item.grade);
             UpdateStackCount();
             ItemSlot slot = GetComponent<ItemSlot>();
             slot.target = item;

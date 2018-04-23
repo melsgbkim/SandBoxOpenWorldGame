@@ -17,8 +17,9 @@ public class SkillUI : MonoBehaviour {
             {
                 for (int x = 0; x < 6; x++)
                 {
-                    GameObject slot = Instantiate(skillSlot, new Vector3((x - 2.5f) * 105+960, (y - 1f) * 105 + 210, 0), Quaternion.identity);
+                    GameObject slot = Instantiate(skillSlot, Vector3.zero, Quaternion.identity);
                     slot.transform.SetParent(transform);
+                    slot.transform.position = new Vector3((x - 2.5f) * 105 + 960, (y - 1f) * 105 + 210, 0);
                     slot.name = "Skill_" + (x + 1) + (y + 1);
                     skillList.Add(slot);
                 }

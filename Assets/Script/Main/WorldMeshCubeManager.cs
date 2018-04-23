@@ -61,6 +61,7 @@ public class WorldMeshCubeManager : MonoBehaviour {
             else
             {
                 (ListTable[node.InnerText] as List<QuadManager.DIRECTION>).Add(dir);
+                if(dir != QuadManager.DIRECTION.max) defaultDir.Remove(dir);
             }
         }
         return ListTable;
@@ -93,20 +94,42 @@ public class WorldMeshCubeManager : MonoBehaviour {
     }
 
 
-    public void DeleteMeshDirFromCenter(Vector3 center, string type, Vector3 size, Vector3 dir)
+    public void DeleteMeshDirFromCenter(Vector3 center, string type, Vector3 size, Vector3 _dir)
     {
-        List<QuadManager.DIRECTION> dirlist = GetDIRList(dir);
-        (MeshCubeManagerTable[type] as WorldMeshCube).DeleteMeshDirFromCenter(center, size, dirlist);
+        List<QuadManager.DIRECTION> DefaultValueList;
+        Hashtable ListTable = GetMatchListTextureWithDir(type, out DefaultValueList);
+        List<QuadManager.DIRECTION> dirListForParameter = GetDIRList(_dir);
+
+        foreach (string key in ListTable.Keys)
+        {
+            List<QuadManager.DIRECTION> dirlist = (ListTable[key] as List<QuadManager.DIRECTION>);
+            if (dirlist == null) dirlist = DefaultValueList;
+            if (dirlist.Contains(dirListForParameter[0]) == false) continue;
+            if (MeshCubeManagerTable.ContainsKey(key) == false)
+                NewMeshCubeToHashTable(key);
+            (MeshCubeManagerTable[key] as WorldMeshCube).DeleteMeshDirFromCenter(center, size, dirListForParameter);
+            break;
+        }
     }
 
 
-    public void NewMeshByDeleteCube(Vector3 center, string type, Vector3 size,Vector3 dir)
+    public void NewMeshByDeleteCube(Vector3 center, string type, Vector3 size,Vector3 _dir)
     {
-        if (MeshCubeManagerTable.ContainsKey(type) == false)
-            NewMeshCubeToHashTable(type);
 
-        List<QuadManager.DIRECTION> dirlist = GetDIRList(dir);
-        (MeshCubeManagerTable[type] as WorldMeshCube).addBlock(center, size,dirlist,-1f); 
+        List<QuadManager.DIRECTION> DefaultValueList;
+        Hashtable ListTable = GetMatchListTextureWithDir(type, out DefaultValueList);
+        List<QuadManager.DIRECTION> dirListForParameter = GetDIRList(_dir);
+
+        foreach (string key in ListTable.Keys)
+        {
+            List<QuadManager.DIRECTION> dirlist = (ListTable[key] as List<QuadManager.DIRECTION>);
+            if (dirlist == null) dirlist = DefaultValueList;
+            if (dirlist.Contains(dirListForParameter[0]) == false) continue;
+            if (MeshCubeManagerTable.ContainsKey(key) == false)
+                NewMeshCubeToHashTable(key);
+            (MeshCubeManagerTable[key] as WorldMeshCube).addBlock(center, size, dirListForParameter,-1f);
+            break;
+        }
     }
 
     public List<QuadManager.DIRECTION> GetDIRList(Vector3 v)

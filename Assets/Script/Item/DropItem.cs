@@ -70,7 +70,7 @@ public class DropItem : MonoBehaviour {
 
     public void SumDropItem(DropItem other)
     {
-        if (item.name == other.item.name && 
+        if (item.id == other.item.id && 
             other.WillDeleted == false && 
             WillDeleted == false)
         {
@@ -81,7 +81,6 @@ public class DropItem : MonoBehaviour {
             {
                 float difference = s.StackCount;
                 s.StackCount = my.ItemGet(s.StackCount);
-                //print(difference+">>"+ s.StackCount);
                 difference -= s.StackCount;
                 if (s.StackCount <= 0)
                 {
@@ -187,8 +186,8 @@ public class DropItem : MonoBehaviour {
         string _RandomCountMax = node.GetAttribute("max");
 
         float minPercent = (_minPercent == "" ? 1:float.Parse(_minPercent));
-        float Min = (_RandomCountMin == "" ? 1 : float.Parse(_RandomCountMin));
-        float Max = (_RandomCountMax == "" ? 1 : float.Parse(_RandomCountMax));
+        int Min = (_RandomCountMin == "" ? 1 : int.Parse(_RandomCountMin));
+        int Max = (_RandomCountMax == "" ? 1 : int.Parse(_RandomCountMax));
 
         XmlElement ItemInfo = XMLFileLoader.Loader.File("Item").GetNodeByID(id, "Item");
         string Category = XMLUtil.FindOneByTag(ItemInfo, "Category").InnerText;

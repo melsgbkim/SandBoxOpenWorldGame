@@ -105,7 +105,7 @@ public class ItemCube : ItemStackable
 {
     public string type;
     public bool BulidMode = false;
-    public bool start = true;
+    public bool start = false;
     public Vector3 BulidPosition = Vector3.zero;
     public GameObject point;
     public GameObject pointCube;
@@ -128,18 +128,19 @@ public class ItemCube : ItemStackable
         Stackable = true;
         StackMax = 9999;
         StackCount = count;
+        MonoBehaviour.print("ItemCube id:" + id+",   count:"+count);
 
         this.id = id;
     }
 
     public override void ItemUse(float count)
     {
-        if (BulidMode == false)
+        if (BulidMode == false && start == false && this.StackCount > 0)
         {
             BulidMode = true;
             start = true;
         }
-        else
+        else if(BulidMode == true && start == false)
         {
             if (ItemAction(count))
                 DeleteItem(count);
@@ -151,8 +152,17 @@ public class ItemCube : ItemStackable
     }
     public override bool ItemAction(float count)
     {
+        XmlElement Item = XMLFileLoader.Loader.File("Item").GetNodeByID(id, "Item");
+        XmlNodeList actionList = Item.GetElementsByTagName("Action");
+        bool result = false;
+        foreach (XmlElement node in actionList)
+        {
+            switch(node.GetAttribute("type"))
+            {
+                case "BuildCube": result = BlockManager.manager.AddBlock(new Vector3(Mathf.Round(BulidPosition.x * 3), Mathf.Round(BulidPosition.y * 3), Mathf.Round(BulidPosition.z * 3)), Vector3.one, node.InnerText, true); break;
+            }
+        }
         
-        bool result = BlockManager.manager.AddBlock(new Vector3(Mathf.Round(BulidPosition.x * 3), Mathf.Round(BulidPosition.y * 3), Mathf.Round(BulidPosition.z * 3)), Vector3.one, type, true);
         if (result == false)
         {
             MonoBehaviour.print(BulidPosition + " >> " + type + " >> cound : " + count);

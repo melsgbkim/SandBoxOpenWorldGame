@@ -34,14 +34,24 @@ public class BlockManager : MonoBehaviour {
         {
             firstUpdate = false;
             AddBlockRange(BlockPrefab, new Vector3(-100, -5, -100), new Vector3(100, -1, 100), "cube_00000001", true);
-            AddBlockRange(BlockPrefab, new Vector3(0, 0, 0), new Vector3(100, 9, 100), "cube_00000001", true);
-        
-            AddBlock(BlockPrefab, new Vector3(0, 0, -2), Vector3.one, "cube_00000002", true);
-            AddBlock(BlockPrefab, new Vector3(1, 0, -1), Vector3.one, "cube_00000003", true);
-            AddBlock(BlockPrefab, new Vector3(2, 0, -1), Vector3.one, "cube_00000004", true);
-            AddBlock(BlockPrefab, new Vector3(3, 0, -1), Vector3.one, "cube_00000005", true);
+            AddBlockRange(BlockPrefab, new Vector3(11, 0, 0), new Vector3(100, 9, 100), "cube_00000001", true);
+            
+            AddBlockRange(BlockPrefab, new Vector3(0, 0, 0), new Vector3(10, 0, 10), "cube_00000001", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 1, 0), new Vector3(10, 1, 10), "cube_00000002", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 2, 0), new Vector3(10, 2, 10), "cube_00000003", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 3, 0), new Vector3(10, 3, 10), "cube_00000004", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 4, 0), new Vector3(10, 4, 10), "cube_00000005", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 5, 0), new Vector3(10, 5, 10), "cube_00000002", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 6, 0), new Vector3(10, 6, 10), "cube_00000003", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 7, 0), new Vector3(10, 7, 10), "cube_00000004", true);
+            AddBlockRange(BlockPrefab, new Vector3(0, 8, 0), new Vector3(10, 8, 10), "cube_00000005", true);
 
 
+  //          AddBlockRange(BlockPrefab, new Vector3(0, 5, 1), new Vector3(10, 5, 10), "cube_00000004", true);
+  //          AddBlockRange(BlockPrefab, new Vector3(0, 6, 1), new Vector3(10, 6, 10), "cube_00000001", true);
+
+
+  //          AddBlockRange(BlockPrefab, new Vector3(0, 0, 11), new Vector3(10, 0, 20), "cube_00000004", true);
 
             //deleteBlock(new Vector3(0, 0, 0));
             //AddBlock(BlockPrefab, new Vector3(0, 1, 0), Vector3.one);
@@ -248,21 +258,6 @@ public class BlockManager : MonoBehaviour {
             List<Vector3> CheckList = DirListDefault;
             for (int i = 0; i < CheckList.Count; i++)
             {
-                /*bool isNeedToDeleteMesh = true;
-                for (int k = 0; k < list.Count; k++)
-                {
-                    Vector3 c = CheckList[i] + center;
-                    if (list[k].CheckThisCubeCollideRange(c,c))
-                    {//create mesh
-                        WorldMeshCubeManager.Get.NewMeshByDeleteCube(center,list[k].type,size,CheckList[i]);
-                        isNeedToDeleteMesh = false;
-                        break;
-                    }
-                }
-                if(isNeedToDeleteMesh)
-                {//create mesh this type;
-                    WorldMeshCubeManager.Get.DeleteMeshDirFromCenter(center, targetType, size, CheckList[i]);
-                }*/
                 bool InList = false;
                 for (int j = 0; j < dirListResult.Count; j++)
                 {

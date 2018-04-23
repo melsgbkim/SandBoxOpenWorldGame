@@ -75,9 +75,9 @@ public class PlayerInventory : MonoBehaviour {
 
     void AddItem(Item i)
     {
-        if(ItemTable.ContainsKey(i.name) && i.Stackable && ItemTable[i.name] != null && (ItemTable[i.name] as List<Item>).Count > 0)
+        if(ItemTable.ContainsKey(i.id) && i.Stackable && ItemTable[i.id] != null && (ItemTable[i.id] as List<Item>).Count > 0)
         {
-            List<Item> list = ItemTable[i.name] as List<Item>;
+            List<Item> list = ItemTable[i.id] as List<Item>;
             Item item = list[0] as Item;
             float newCount = item.ItemGet(i.StackCount);
             if(newCount > 0)
@@ -86,14 +86,14 @@ public class PlayerInventory : MonoBehaviour {
                 newItem(i, list);
             }
         }
-        else if(ItemTable.ContainsKey(i.name))
+        else if(ItemTable.ContainsKey(i.id))
         {
-            newItem(i, ItemTable[i.name] as List<Item>);
+            newItem(i, ItemTable[i.id] as List<Item>);
         }
         else
         {
             List<Item> list = new List<Item>();
-            ItemTable.Add(i.name, list);
+            ItemTable.Add(i.id, list);
             newItem(i, list);
         }
     }
@@ -101,14 +101,14 @@ public class PlayerInventory : MonoBehaviour {
     void newItem(Item i)
     {
         List<Item> list;
-        if (ItemTable.ContainsKey(i.name))
+        if (ItemTable.ContainsKey(i.id))
         {
-            list = ItemTable[i.name] as List<Item>;
+            list = ItemTable[i.id] as List<Item>;
         }
         else
         {
             list = new List<Item>();
-            ItemTable.Add(i.name, list);
+            ItemTable.Add(i.id, list);
         }
         newItem(i, list);
     }
@@ -142,8 +142,8 @@ public class PlayerInventory : MonoBehaviour {
     {
         if (isInventoryFull() == false)
             return true;
-        if (ItemTable.ContainsKey(i.name) && i.Stackable && ItemTable[i.name] != null)
-            return ((ItemTable[i.name] as List<Item>)[0] as ItemStackable).ItemFull() == false;
+        if (ItemTable.ContainsKey(i.id) && i.Stackable && ItemTable[i.id] != null)
+            return ((ItemTable[i.id] as List<Item>)[0] as ItemStackable).ItemFull() == false;
         else
             return false;
     }
@@ -181,7 +181,7 @@ public class PlayerInventory : MonoBehaviour {
     {
         if(i.Stackable == false || (i.Stackable && i.StackCount <= 0f))
         {
-            List<Item> itemlist = ItemTable[i.name] as List<Item>;
+            List<Item> itemlist = ItemTable[i.id] as List<Item>;
             itemlist.Remove(i);
             Vector2 index = new Vector2(i.ui.slot.index.x, i.ui.slot.index.y);
             ItemSlotArr[(int)index.y][(int)index.x].target = null;
@@ -190,7 +190,7 @@ public class PlayerInventory : MonoBehaviour {
             SortEmptySlot();
         }
 
-        List<Item> list = ItemTable[i.name] as List<Item>;
+        List<Item> list = ItemTable[i.id] as List<Item>;
     }
 
     bool dragItem = false;
