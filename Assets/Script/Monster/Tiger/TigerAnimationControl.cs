@@ -20,13 +20,9 @@ public class TigerAnimationControl : MonsterBase
 	// Update is called once per frame
 	void Update () {
         currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
-        if (Input.GetKey(KeyCode.UpArrow)) v += speed * Time.deltaTime;
-        if (Input.GetKey(KeyCode.DownArrow)) v -= speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.F11)) v += speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.F12)) v -= speed * Time.deltaTime;
         ChangeFloat("Speed", v);
-
-        if (Input.GetKeyDown(KeyCode.Space)) tryChangeTrigger("Attack");
-        if (Input.GetKeyDown(KeyCode.Z)) tryChangeTrigger("Sound");
-
-        
+        // to do 입력키 정리
     }
 }

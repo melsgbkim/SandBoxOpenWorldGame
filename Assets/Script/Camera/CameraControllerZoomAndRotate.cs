@@ -25,13 +25,13 @@ public class CameraControllerZoomAndRotate : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKey(ZoomIn))       cameraZoomObject.Translate(new Vector3(0, 0, -ZoomSpeed) * Time.deltaTime);
-        if (Input.GetKey(ZoomOut))      cameraZoomObject.Translate(new Vector3(0, 0, ZoomSpeed) * Time.deltaTime);
+        if (Input.GetKey(KeyCode.F1))       cameraZoomObject.Translate(new Vector3(0, 0, -ZoomSpeed) * Time.deltaTime);
+        if (Input.GetKey(KeyCode.F2))      cameraZoomObject.Translate(new Vector3(0, 0, ZoomSpeed) * Time.deltaTime);
         if (cameraZoomObject.localPosition.z < ZoomMinMax.x) cameraZoomObject.localPosition = new Vector3(0, 0, ZoomMinMax.x);
         if (cameraZoomObject.localPosition.z > ZoomMinMax.y) cameraZoomObject.localPosition = new Vector3(0, 0, ZoomMinMax.y);
 
-        if (Input.GetKey(RotatePlus))   cameraRotateObject.Rotate(new Vector3(0, RotateSpeed, 0) * Time.deltaTime);
-        if (Input.GetKey(RotateMinus))  cameraRotateObject.Rotate(new Vector3(0, -RotateSpeed, 0) * Time.deltaTime);
+        if (Input.GetKey(KeyCode.F3))   cameraRotateObject.Rotate(new Vector3(0, RotateSpeed, 0) * Time.deltaTime);
+        if (Input.GetKey(KeyCode.F4))  cameraRotateObject.Rotate(new Vector3(0, -RotateSpeed, 0) * Time.deltaTime);
 
         CameraRotate = cameraRotateObject.rotation;
     }

@@ -19,21 +19,6 @@ public class WorldMeshCubeManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        int max = 0;
-        if (Input.GetKeyDown(KeyCode.F6))   max = 1;
-        if (Input.GetKeyDown(KeyCode.F7))   max = 20;
-
-        if (Input.GetKeyDown(KeyCode.Keypad1)) targetType = "cube_00000001";
-        if (Input.GetKeyDown(KeyCode.Keypad2)) targetType = "cube_00000002";
-        if (max > 0)
-        {
-            for (int i = 0; i < max; i++)
-            {
-                NewMeshCube(pos,targetType,Vector3.one);
-                pos += Vector3.forward;
-            }
-        }
-        
     }
 
     public Hashtable GetMatchListTextureWithDir(string type,out List<QuadManager.DIRECTION> defaultDir)

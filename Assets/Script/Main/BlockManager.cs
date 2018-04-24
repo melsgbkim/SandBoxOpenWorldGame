@@ -45,93 +45,9 @@ public class BlockManager : MonoBehaviour {
             AddBlockRange(BlockPrefab, new Vector3(0, 6, 0), new Vector3(10, 6, 10), "cube_00000003", true);
             AddBlockRange(BlockPrefab, new Vector3(0, 7, 0), new Vector3(10, 7, 10), "cube_00000004", true);
             AddBlockRange(BlockPrefab, new Vector3(0, 8, 0), new Vector3(10, 8, 10), "cube_00000005", true);
-
-
-  //          AddBlockRange(BlockPrefab, new Vector3(0, 5, 1), new Vector3(10, 5, 10), "cube_00000004", true);
-  //          AddBlockRange(BlockPrefab, new Vector3(0, 6, 1), new Vector3(10, 6, 10), "cube_00000001", true);
-
-
-  //          AddBlockRange(BlockPrefab, new Vector3(0, 0, 11), new Vector3(10, 0, 20), "cube_00000004", true);
-
-            //deleteBlock(new Vector3(0, 0, 0));
-            //AddBlock(BlockPrefab, new Vector3(0, 1, 0), Vector3.one);
-            //AddBlockRange(BlockPrefab, new Vector3(0, 3, 0), new Vector3(9, 3, 0));
-            //AddBlockRange(BlockPrefab, new Vector3(0, 6, 0), new Vector3(4, 6, 0));
-            //AddBlockRange(BlockPrefab, new Vector3(6, 6, 0), new Vector3(9, 6, 0));
-            //deleteBlock(new Vector3(4, 4, 0), Vector3.one);
-
-
-
-            //AddBlock(BlockPrefab, new Vector3(0, 0, 0), new Vector3(11, 3, 11));
         }
-        int max = 0;
-        if (Input.GetKeyDown(KeyCode.Insert)) max = 1000;
-        if (Input.GetKeyDown(KeyCode.Home)) max = 1;
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            deleteBlock(deleteIndex);
-            print(deleteIndex);
-            deleteIndex.x += 1f;
-            if(deleteIndex.x>=8)
-            {
-                deleteIndex.x = 3;
-                deleteIndex.y += 1f;
-                if (deleteIndex.y >= 8)
-                {
-                    deleteIndex.y = 1;
-                    deleteIndex.z += 1f;
-                }
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                    AddBlockRange(BlockPrefab, new Vector3(0, y, 0 + y+ j * 2), new Vector3(20, y, 2 + y+j * 2), "cube_00000001", true);
-
-                y++;
-            }
-        }
-
-
-        for (int i = 0; i < max; i++)
-        {
-            AddBlock(BlockPrefab, new Vector3(x, y, 1 + z + y), Vector3.one, "cube_00000001", true);
-            x++;
-            if (x >= 0)
-            {
-                x = -10; z++;
-            }
-            if (z >= 3)
-            {
-                z = 0; y++;
-            }
-        }
-        
 	}
-    void OnGUI()
-    {
-        int w = Screen.width, h = Screen.height;
 
-        GUIStyle style = new GUIStyle();
-
-        Rect rect = new Rect(0, 50, w, h * 2 / 100);
-        style.alignment = TextAnchor.UpperLeft;
-        style.fontSize = h * 2 / 100;
-        style.normal.textColor = new Color(0.0f, 0.0f, 0.5f, 1.0f);
-        string text = "";
-        try
-        {
-            text = OctreeCube.count + " blocks";
-        }
-        catch
-        {
-
-        }
-        GUI.Label(rect, text, style);
-    }
 
     void AddBlockRange(Transform obj, Vector3 Start, Vector3 End, string type, bool createMesh)
     {
@@ -166,16 +82,12 @@ public class BlockManager : MonoBehaviour {
         if(createMesh)
             WorldMeshCubeManager.Get.NewMeshCube(cube.Center, cube.type, cube.Size);
         List<Cube> searchList = OctreeCube.FindRangeList(cube.GetStartVector3() - Vector3.one * 2, cube.GetEndVector3() + Vector3.one * 2);
-        //print("try [" + (cube.GetStartVector3() - Vector3.one) + ">>" + (cube.GetEndVector3() + Vector3.one) + "]");
         Cube MargeTarget = null;
         
-        //print("add   (" + cube.GetStartVector3() + ">>" + cube.GetEndVector3() + ")");
         foreach (Cube c in searchList)
         {
-            //print("find[" + (c.GetStartVector3()) + ">>" + (c.GetEndVector3()) + "]");
             if (c.CheckCanMarge(cube))
             {
-                //print("target(" + c.GetStartVector3() + ">>" + c.GetEndVector3() + ")");
                 if (MargeTarget == null) MargeTarget = c;
                 else
                 {
@@ -189,18 +101,14 @@ public class BlockManager : MonoBehaviour {
         if (MargeTarget == null)
         {
             OctreeCube.AddValue(new TreeAble(cube), cube.GetStartVector3(), cube.GetEndVector3());
-            
-            //GetComponent<QuadManager>().AddQuadAllDir(cube);
+          
         }
         else
         {
             MargeTarget.ExpandCubeForMarge(cube);
             DestroyImmediate(tmp.gameObject);
-            //print("b : " + MargeTarget.myTree.name);
             MargeTarget.myTree.updateValue(new TreeAble(MargeTarget));
             loopMarge(MargeTarget);
-            //print("a : " + MargeTarget.myTree.name);
-            //update MargeTarget
         }
         return true;
     }

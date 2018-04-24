@@ -14,14 +14,14 @@ public class FaceUpdate : MonoBehaviour
 		anim = GetComponent<Animator> ();
 	}
 
-	void OnGUI ()
+	/*void OnGUI ()
 	{
 		foreach (var animation in animations) {
 			if (GUILayout.Button (animation.name)) {
 				anim.CrossFade (animation.name, 0);
 			}
 		}
-	}
+	}*/
 
 	float current = 0;
 

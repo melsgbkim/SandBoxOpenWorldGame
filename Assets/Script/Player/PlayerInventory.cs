@@ -45,29 +45,20 @@ public class PlayerInventory : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (Input.GetKeyDown(KeyCode.F3))
+        if (Input.GetKeyDown(KeyCode.F6))
         {
-            DropItem.DropItemPos(new ItemCube("item_cube_00000001", 10), new Vector3(-3, 3, 0), Vector3.zero);
-            DropItem.DropItemPos(new ItemCube("item_cube_00000002", 10), new Vector3(-4, 3, 0), Vector3.zero);
-            DropItem.DropItemPos(new ItemCube("item_cube_00000003", 10), new Vector3(-5, 3, 0), Vector3.zero);
-            DropItem.DropItemPos(new ItemCube("item_cube_00000004", 10), new Vector3(-6, 3, 0), Vector3.zero);
-            DropItem.DropItemPos(new ItemCube("item_cube_00000005", 10), new Vector3(-7, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000001", 10), new Vector3(0, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000002", 10), new Vector3(0, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000003", 10), new Vector3(0, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000004", 10), new Vector3(0, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000005", 10), new Vector3(0, 3, 0), Vector3.zero);
 
             //AddItem(item);
         }
-        if (Input.GetKeyDown(KeyCode.F4))
+        if (Input.GetKeyDown(KeyCode.F7))
         {
-            ItemCube item;
-            for (int i = 0; i < 255; i++)
-                DropItem.DropItemPos(new ItemCube("item_cube_00000001", 9999), new Vector3(-3, 3, 0), Vector3.zero);
-            DropItem.DropItemPos(new ItemCube("item_cube_00000001", 9998), new Vector3(-3, 3, 0), Vector3.zero);
+            DropItem.DropItemPos(new ItemCube("item_cube_00000001", 9999), new Vector3(-3, 3, 0), Vector3.zero);
         }
-        if (Input.GetKeyDown(KeyCode.F5))
-        {
-            DropItem.DropItemPos(new ItemEquipment(""), new Vector3(-3 + Random.RandomRange(0f, 3f), 5, -3 + Random.RandomRange(0f, 3f)), Vector3.zero);
-        }
-
-            
 
         if (Input.GetKeyDown(InventoryOpenKey))
             inventoryUI.Toggle();

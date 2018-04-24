@@ -22,8 +22,8 @@ public class SkeletonAnimationControl : MonsterBase
     void Update()
     {
         currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
-        if (Input.GetKey(KeyCode.UpArrow)) v += speed * Time.deltaTime;
-        if (Input.GetKey(KeyCode.DownArrow)) v -= speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.F9)) v += speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.F10)) v -= speed * Time.deltaTime;
         ChangeFloat("Speed", v);
 
         if (Input.GetKeyDown(KeyCode.Z)) tryChangeTrigger("Attack");
